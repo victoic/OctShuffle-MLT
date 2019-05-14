@@ -346,11 +346,11 @@ class ModelResNetSep2(nn.Module):
       _ReLU(inplace=True)
     )
     
-    self.conv5 = OctConv2d(64, 128, 3, padding=1 bias=False)
+    self.conv5 = OctConv2d(64, 128, 3, padding=1, bias=False)
     self.conv6 = OctConv2d(128, 128, 3, padding=1, bias=False)
     self.conv7 = OctConv2d(128,256, 3, padding=1, bias=False)
     self.conv8 = OctConv2d(256, 256, 3, padding=1, bias=False)
-    self.conv9 = OctConv2d(256, 256, 3, padding=1 bias=False, alpha=(0.5, 0))
+    self.conv9 = OctConv2d(256, 256, 3, padding=1, bias=False, alpha=(0.5, 0))
     self.conv10_s = Conv2d(256, 256, (2, 3), padding=(0, 1), bias=False)
     self.conv11 = Conv2d(256, 8400, 1, padding=(0,0))
     
@@ -616,11 +616,11 @@ class ModelMLTRCTW(nn.Module):
       _ReLU(inplace=True)
     )
     
-    self.conv5 = OctConv2d(64, 128, 3, padding=1 bias=False)
+    self.conv5 = OctConv2d(64, 128, 3, padding=1, bias=False)
     self.conv6 = OctConv2d(128, 128, 3, padding=1, bias=False)
     self.conv7 = OctConv2d(128,256, 3, padding=1, bias=False)
     self.conv8 = OctConv2d(256, 256, 3, padding=1, bias=False)
-    self.conv9 = OctConv2d(256, 256, 3, padding=1 bias=False, alpha=(0.5, 0))
+    self.conv9 = OctConv2d(256, 256, 3, padding=1, bias=False, alpha=(0.5, 0))
     self.conv10_s = Conv2d(256, 256, (2, 3), padding=(0, 1), bias=False)
     self.conv11 = Conv2d(256, 8400, 1, padding=(0,0))
     

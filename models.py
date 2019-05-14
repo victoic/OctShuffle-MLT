@@ -331,7 +331,7 @@ class ModelResNetSep2(nn.Module):
     self.inplanes = 64
     
     self.layer0 = nn.Sequential(
-      OctConv2d(3, 16, 3, stride=1, padding=1, bias=False),
+      OctConv2d(3, 16, 3, stride=1, padding=1, bias=False, alpha=(0, 0.5)),
       CReLU_IN(16),
       OctConv2d(32, 32, 3, stride=2, padding=1, bias=False),
       CReLU_IN(32)

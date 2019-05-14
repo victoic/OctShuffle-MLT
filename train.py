@@ -611,7 +611,7 @@ if __name__ == '__main__':
   parser.add_argument('-ocr_feed_list', default='../MobileMLT/dataset/crops/icdar-2015-Ch4/gt.txt')
   parser.add_argument('-save_path', default='backup')
   parser.add_argument('-model', default='')
-  parser.add_argument('-debug', type=int, default=1)
+  parser.add_argument('-debug', type=int, default=0)
   parser.add_argument('-batch_size', type=int, default=32)
   parser.add_argument('-ocr_batch_size', type=int, default=256)
   parser.add_argument('-num_readers', type=int, default=1)

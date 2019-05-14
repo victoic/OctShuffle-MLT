@@ -346,13 +346,13 @@ class ModelResNetSep2(nn.Module):
       _ReLU(inplace=True)
     )
     
-    self.conv5 = OctConv2d(64, 128, 3 padding=1 bias=False)
-    self.conv6 = OctConv2d(128, 128, 3 padding=1, bias=False)
+    self.conv5 = OctConv2d(64, 128, 3, padding=1 bias=False)
+    self.conv6 = OctConv2d(128, 128, 3, padding=1, bias=False)
     self.conv7 = OctConv2d(128,256, 3, padding=1, bias=False)
-    self.conv8 = OctConv2d(256, 256, 3 padding=1, bias=False)
-    self.conv9 = OctConv2d(256, 256, 3 padding=1 bias=False, alpha=(0.5, 0))
+    self.conv8 = OctConv2d(256, 256, 3, padding=1, bias=False)
+    self.conv9 = OctConv2d(256, 256, 3, padding=1 bias=False, alpha=(0.5, 0))
     self.conv10_s = Conv2d(256, 256, (2, 3), padding=(0, 1), bias=False)
-    self.conv11 = Conv2d(256, 8400, 1 padding=(0,0))
+    self.conv11 = Conv2d(256, 8400, 1, padding=(0,0))
     
     self.batch5 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
     self.batch6 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
@@ -379,10 +379,10 @@ class ModelResNetSep2(nn.Module):
     
     self.feature1 = OctConv2d(64, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
     
-    self.act = OctConv2d(256, 1, 1 padding=0, stride=1, alpha=0)
-    self.rbox = OctConv2d(256, 4, 1 padding=0, stride=1, alpha=0)
+    self.act = OctConv2d(256, 1, 1, padding=0, stride=1, alpha=0)
+    self.rbox = OctConv2d(256, 4, 1, padding=0, stride=1, alpha=0)
     
-    self.angle = OctConv2d(256, 2, 1 padding=0, stride=1, alpha=0)
+    self.angle = OctConv2d(256, 2, 1, padding=0, stride=1, alpha=0)
     self.drop0 = _Dropout2d(p=0.2, inplace=False)
     self.drop1 = Dropout2d(p=0.2, inplace=False)
     
@@ -616,13 +616,13 @@ class ModelMLTRCTW(nn.Module):
       _ReLU(inplace=True)
     )
     
-    self.conv5 = OctConv2d(64, 128, 3 padding=1 bias=False)
-    self.conv6 = OctConv2d(128, 128, 3 padding=1, bias=False)
+    self.conv5 = OctConv2d(64, 128, 3, padding=1 bias=False)
+    self.conv6 = OctConv2d(128, 128, 3, padding=1, bias=False)
     self.conv7 = OctConv2d(128,256, 3, padding=1, bias=False)
-    self.conv8 = OctConv2d(256, 256, 3 padding=1, bias=False)
-    self.conv9 = OctConv2d(256, 256, 3 padding=1 bias=False, alpha=(0.5, 0))
+    self.conv8 = OctConv2d(256, 256, 3, padding=1, bias=False)
+    self.conv9 = OctConv2d(256, 256, 3, padding=1 bias=False, alpha=(0.5, 0))
     self.conv10_s = Conv2d(256, 256, (2, 3), padding=(0, 1), bias=False)
-    self.conv11 = Conv2d(256, 8400, 1 padding=(0,0))
+    self.conv11 = Conv2d(256, 8400, 1, padding=(0,0))
     
     self.batch5 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
     self.batch6 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
@@ -649,10 +649,10 @@ class ModelMLTRCTW(nn.Module):
     
     self.feature1 = OctConv2d(64, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
     
-    self.act = Conv2d(256, 1, 1 padding=0, stride=1, alpha=0)
-    self.rbox = Conv2d(256, 4, 1 padding=0, stride=1, alpha=0)
+    self.act = Conv2d(256, 1, 1, padding=0, stride=1, alpha=0)
+    self.rbox = Conv2d(256, 4, 1, padding=0, stride=1, alpha=0)
     
-    self.angle = Conv2d(256, 2, 1 padding=0, stride=1, alpha=0)
+    self.angle = Conv2d(256, 2, 1, padding=0, stride=1, alpha=0)
     self.drop0 = _Dropout2d(p=0.2, inplace=False)
     self.drop1 = Dropout2d(p=0.2, inplace=False)
     

@@ -590,10 +590,17 @@ def main(opts):
       state = {'step': step,
                'learning_rate': learning_rate,
               'state_dict': net.state_dict(),
-              'optimizer': optimizer.state_dict()}
+              'optimizer': optimizer.state_dict(),
+              'max_memory_allocated': torch.cuda.max_memory_allocated()}
       torch.save(state, save_name)
-      print('save model: {}'.format(save_name))
-
+      print('save model: {}\tmax memory: {}'.format(save_name, torch.cuda.max_memory_allocated()))
+  save_name = os.path.join(opts.save_path, '{}.h5'.format(model_name))
+  state = {'step': step,
+           'learning_rate': learning_rate,
+          'state_dict': net.state_dict(),
+          'optimizer': optimizer.state_dict()}
+  torch.save(state, save_name)
+  print('save model: {}'.format(save_name))
 
 import argparse
 

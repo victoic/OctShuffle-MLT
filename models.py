@@ -484,7 +484,7 @@ class ModelResNetSep2(nn.Module):
     features3 = self.feature3(su1)
     x = self.layer4(su1)
     
-    x = self.drop1(x)
+    x = self.drop0(x)
     
     features4 = self.feature4(x)
     if self.attention:
@@ -600,6 +600,7 @@ class ModelMLTRCTW(nn.Module):
     super(ModelMLTRCTW, self).__init__()
     
     self.inplanes = 64
+    alpha = 0.5
     
     self.layer0 = nn.Sequential(
       OctConv2d(3, 16, 3, stride=1, padding=1, bias=False, alpha=(0, 0.5)),
@@ -635,11 +636,11 @@ class ModelMLTRCTW(nn.Module):
     self.leaky = _LeakyReLU(negative_slope=0.01, inplace=True)
     self.leaky2 = LeakyReLU(negative_slope=0.01, inplace=True)
     
-    self.layer1 = self._make_layer(BasicBlockIn, 64, 3, stride=1)
+    self.layer1 = self._make_layer(BasicBlockIn, 64, 3, stride=1, alpha=alpha)
     self.inplanes = 64
-    self.layer2 = self._make_layer(BasicBlockIn, 128, 4, stride=2)
-    self.layer3 = self._make_layer(BasicBlockSepIn, 256, 6, stride=2)
-    self.layer4 = self._make_layer(BasicBlockSepIn, 512, 4, stride=2)
+    self.layer2 = self._make_layer(BasicBlockIn, 128, 4, stride=2, alpha=alpha)
+    self.layer3 = self._make_layer(BasicBlockSepIn, 256, 6, stride=2, alpha=alpha)
+    self.layer4 = self._make_layer(BasicBlockSepIn, 512, 4, stride=2, alpha=alpha)
     
     self.feature4 = OctConv2d(512, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
     self.feature3 = OctConv2d(256, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
@@ -673,22 +674,22 @@ class ModelMLTRCTW(nn.Module):
     self.layer0o = copy.deepcopy(self.layer0)
     self.layer0_1o = copy.deepcopy(self.layer0_1)
   
-  def _make_layer(self, block, planes, blocks, stride=1):
+  def _make_layer(self, block, planes, blocks, stride=1, alpha=0.5):
     
     downsample = None
     if stride != 1 or self.inplanes != planes * block.expansion:
       downsample = nn.Sequential(
   
         OctConv2d(self.inplanes, planes * block.expansion,
-                  kernel_size=1, stride=stride, bias=False),
-        _BatchNorm2d(planes * block.expansion),
+                  kernel_size=1, stride=stride, bias=False, alpha=alpha),
+        _BatchNorm2d(planes * block.expansion, alpha_in=alpha, alpha_out=alpha),
       )
 
     layers = []
     layers.append(block(self.inplanes, planes, stride, downsample))
     self.inplanes = planes * block.expansion
     for i in range(1, blocks):
-      layers.append(block(self.inplanes, planes))
+      layers.append(block(self.inplanes, planes, alpha=alpha))
 
     return nn.Sequential(*layers)
   
@@ -758,7 +759,7 @@ class ModelMLTRCTW(nn.Module):
     features3 = self.feature3(su1)
     x = self.layer4(su1)
     
-    x = self.drop1(x)
+    x = self.drop0(x)
     
     features4 = self.feature4(x)
     if self.attention:

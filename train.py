@@ -31,7 +31,7 @@ from torch import optim
 lr_decay = 0.99
 momentum = 0.9
 weight_decay = 0
-batch_per_epoch = 100000
+batch_per_epoch = 1000
 disp_interval = 100
 
 norm_height = 40

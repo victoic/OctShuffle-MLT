@@ -277,6 +277,9 @@ def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, g
       fs2 = net.forward_features(x2)
       fs2_hf = fs2[0]
       fs2_lf = fs2[1]
+
+      print("===================")
+      print("features: {} {} fs2: {} {}".format(features_hf.shape, feature_hf.shape, fs2_hf.shape, fs2_lf.shape))
       
       offset_hf = (fs2_hf.size(2) - features_hf.size(2)) // 2
       offset_hf_2 = (fs2_hf.size(3) - features_hf.size(3)) // 2
@@ -284,8 +287,12 @@ def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, g
       offset_lf = (fs2_lf.size(2) - features_lf.size(2)) // 2
       offset_lf_2 = (fs2_lf.size(3) - features_lf.size(3)) // 2
 
+      print("offset_hf: {} {} offset_lf: {} {}".format(offset_hf, offset_hf_2, offset_lf, offset_lf_2))
+
       fs2_hf = fs2_hf[:, :, offset_hf:(features_hf.size(2) + offset_hf), offset_hf_2:-offset_hf_2]
       fs2_lf = fs2_lf[:, :, offset_lf:(features_lf.size(2) + offset_lf), offset_lf_2:-offset_lf_2]
+
+      print("FINAL fs2: {} {}".format(fs2_hf.shape, fs2_lf.shape))
 
       fs2 = fs2_hf, fs2_lf
       labels_pred2 = net.forward_ocr(fs2)

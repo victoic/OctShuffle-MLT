@@ -258,7 +258,7 @@ def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, g
         if gt_txt[k] in codec_rev:                
           gt_labels.append( codec_rev[gt_txt[k]] )
         else:
-          print('Unknown char: {} in {}'.format(gt_txt[k]), fns[gt_id] )
+          print('Unknown char: {} in {}'.format(gt_txt[k]) fns[gt_id] )
           gt_labels.append( 3 )
           
       if 'ARABIC' in ud.name(gt_txt[0]):
@@ -370,7 +370,7 @@ def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, g
         if gt_txt[k] in codec_rev:                
           gt_labels.append( codec_rev[gt_txt[k]] )
         else:
-          print('Unknown char: {} in {}'.format(gt_txt[k]), fns[gt_id] )
+          print('Unknown char: {} in {}'.format(gt_txt[k], fns[gt_id] )
           gt_labels.append( 3 )
       gt_labels.append(codec_rev[' '])
           

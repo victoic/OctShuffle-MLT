@@ -72,7 +72,7 @@ def area(a):
   height = a[3] - a[1]
   return width * height
   
-def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, gt_idxs, gtso, lbso, features, net, ctc_loss, opts, debug = False):
+def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, gt_idxs, gtso, lbso, features, net, ctc_loss, opts, debug = False, fns=None):
   
   ctc_loss_count = 0
   loss = torch.from_numpy(np.asarray([0])).type(torch.FloatTensor).cuda()
@@ -258,7 +258,7 @@ def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, g
         if gt_txt[k] in codec_rev:                
           gt_labels.append( codec_rev[gt_txt[k]] )
         else:
-          print('Unknown char: {0}'.format(gt_txt[k]) )
+          print('Unknown char: {0} in {}'.format(gt_txt[k]), fns[gt_id] )
           gt_labels.append( 3 )
           
       if 'ARABIC' in ud.name(gt_txt[0]):
@@ -370,7 +370,7 @@ def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, g
         if gt_txt[k] in codec_rev:                
           gt_labels.append( codec_rev[gt_txt[k]] )
         else:
-          print('Unknown char: {0}'.format(gt_txt[k]) )
+          print('Unknown char: {0} in {}'.format(gt_txt[k]), fns[gt_id] )
           gt_labels.append( 3 )
       gt_labels.append(codec_rev[' '])
           
@@ -500,7 +500,7 @@ def main(opts):
     try:
       
       if step > 10000 or True: #this is just extra augumentation step ... in early stage just slows down training
-        ctcl, gt_b_good, gt_b_all = process_boxes(images, im_data, seg_pred[0], roi_pred[0], angle_pred[0], score_maps, gt_idxs, gtso, lbso, features, net, ctc_loss, opts, debug=opts.debug)
+        ctcl, gt_b_good, gt_b_all = process_boxes(images, im_data, seg_pred[0], roi_pred[0], angle_pred[0], score_maps, gt_idxs, gtso, lbso, features, net, ctc_loss, opts, debug=opts.debug, fns=image_fns)
         ctc_loss_val += ctcl.data.cpu().numpy()[0]
         loss = loss + ctcl
         gt_all += gt_b_all

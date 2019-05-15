@@ -351,7 +351,8 @@ class ModelResNetSep2(nn.Module):
     self.conv6 = OctConv2d(128, 128, 3, padding=1, bias=False)
     self.conv7 = OctConv2d(128,256, 3, padding=1, bias=False)
     self.conv8 = OctConv2d(256, 256, 3, padding=1, bias=False)
-    self.conv9 = OctConv2d(256, 256, 3, padding=1, bias=False, alpha=(0.5, 0))
+    self.conv9_1 = OctConv2d(256, 256, 3, padding=1, bias=False)
+    self.conv9_2 = OctConv2d(256, 256, 3, padding=1, bias=False, alpha=(0.5, 0))
     self.conv10_s = Conv2d(256, 256, (2, 3), padding=(0, 1), bias=False)
     self.conv11 = Conv2d(256, 8400, 1, padding=(0,0))
     
@@ -439,10 +440,10 @@ class ModelResNetSep2(nn.Module):
     x = self.conv8(x)
     x = self.leaky(x)
     
-    x = self.conv9(x)
+    x = self.conv9_1(x)
     x = self.leaky(x)
-    x = self.conv9(x)
-    x = self.leaky(x)
+    x = self.conv9_2(x)
+    x = self.leaky2(x)
     
     x = self.max2(x)
     

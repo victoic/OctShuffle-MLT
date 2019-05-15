@@ -21,7 +21,6 @@ import torch.autograd as autograd
 import torch.nn.functional as F
 
 from torch_baidu_ctc import ctc_loss, CTCLoss
-#from warpctc_pytorch import CTCLoss
 from ocr_test_utils import print_seq_ext
 
 
@@ -32,10 +31,10 @@ from torch import optim
 lr_decay = 0.99
 momentum = 0.9
 weight_decay = 0
-batch_per_epoch = 1000
+batch_per_epoch = 100000
 disp_interval = 100
 
-norm_height = 44
+norm_height = 40
 
 f = open('codec.txt', 'r')
 codec = f.readlines()[0]
@@ -72,7 +71,7 @@ def area(a):
   height = a[3] - a[1]
   return width * height
   
-def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, gt_idxs, gtso, lbso, features, net, ctc_loss, opts, debug = False, fns=None):
+def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, gt_idxs, gtso, lbso, features, net, ctc_loss, opts, debug = False):
   
   ctc_loss_count = 0
   loss = torch.from_numpy(np.asarray([0])).type(torch.FloatTensor).cuda()
@@ -184,12 +183,12 @@ def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, g
       target_h = norm_height  
         
       scale = target_h / h 
-      target_gw = (int(w * scale) + target_h // 2)
+      target_gw = (int(w * scale) + target_h)
       target_gw = max(8, int(round(target_gw / 4)) * 4) 
       
       #show pooled image in image layer
     
-      scalex = (w + h // 2) / input_W 
+      scalex = (w + h) / input_W 
       scaley = h / input_H 
 
     
@@ -211,27 +210,7 @@ def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, g
       grid = F.affine_grid(theta, torch.Size((1, 3, int(target_h), int(target_gw))))
       
       x = F.grid_sample(im_data[bid].unsqueeze(0), grid)
-
-      h2 = 2 * h
-      scalex =  (w + int(h2)) / input_W
-      scaley = h2 / input_H
-
-      th11 =  scalex * math.cos(angle_gt)
-      th12 = -math.sin(angle_gt) * scaley
-      th13 =  (2 * center[0] - input_W - 1) / (input_W - 1) #* torch.cos(angle_var) - (2 * yc - input_H - 1) / (input_H - 1) * torch.sin(angle_var)
-
-      th21 = math.sin(angle_gt) * scalex
-      th22 =  scaley * math.cos(angle_gt)
-      th23 =  (2 * center[1] - input_H - 1) / (input_H - 1) #* torch.cos(angle_var) + (2 * xc - input_W - 1) / (input_W - 1) * torch.sin(angle_var)
-
-
-      t = np.asarray([th11, th12, th13, th21, th22, th23], dtype=np.float)
-      t = torch.from_numpy(t).type(torch.FloatTensor)
-      t = t.cuda()
-      theta = t.view(-1, 2, 3)
       
-      grid2 = F.affine_grid(theta, torch.Size((1, 3, int( 2 * target_h), int(target_gw + target_h ))))
-      x2 = F.grid_sample(im_data[bid].unsqueeze(0), grid2)
       
       if debug:
         x_c = x.data.cpu().numpy()[0]
@@ -258,44 +237,16 @@ def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, g
         if gt_txt[k] in codec_rev:                
           gt_labels.append( codec_rev[gt_txt[k]] )
         else:
-          print('Unknown char: {} in {}'.format(gt_txt[k], fns[gt_id] ))
+          print('Unknown char: {0}'.format(gt_txt[k]) )
           gt_labels.append( 3 )
           
-      try:    
-        if 'ARABIC' in ud.name(gt_txt[0]):
-            gt_labels = gt_labels[::-1]
-      except:
-        print(gt_txt)
+      if 'ARABIC' in ud.name(gt_txt[0]):
+          gt_labels = gt_labels[::-1]
       gt_labels.append( codec_rev[' '] )
       
       
       features = net.forward_features(x)
-      features_hf = features[0]
-      features_lf = features[1]
       labels_pred = net.forward_ocr(features)
-
-      fs2 = net.forward_features(x2)
-      fs2_hf = fs2[0]
-      fs2_lf = fs2[1]
-
-      print("===================")
-      print("features: {} {} fs2: {} {}".format(features_hf.shape, feature_hf.shape, fs2_hf.shape, fs2_lf.shape))
-      
-      offset_hf = (fs2_hf.size(2) - features_hf.size(2)) // 2
-      offset_hf_2 = (fs2_hf.size(3) - features_hf.size(3)) // 2
-
-      offset_lf = (fs2_lf.size(2) - features_lf.size(2)) // 2
-      offset_lf_2 = (fs2_lf.size(3) - features_lf.size(3)) // 2
-
-      print("offset_hf: {} {} offset_lf: {} {}".format(offset_hf, offset_hf_2, offset_lf, offset_lf_2))
-
-      fs2_hf = fs2_hf[:, :, offset_hf:(features_hf.size(2) + offset_hf), offset_hf_2:-offset_hf_2]
-      fs2_lf = fs2_lf[:, :, offset_lf:(features_lf.size(2) + offset_lf), offset_lf_2:-offset_lf_2]
-
-      print("FINAL fs2: {} {}".format(fs2_hf.shape, fs2_lf.shape))
-
-      fs2 = fs2_hf, fs2_lf
-      labels_pred2 = net.forward_ocr(fs2)
       
       label_length = []
       label_length.append(len(gt_labels))
@@ -304,7 +255,6 @@ def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, g
       labels = autograd.Variable(torch.IntTensor( torch.from_numpy(np.array(gt_labels)).int() ))    
       
       loss = loss + ctc_loss(labels_pred.permute(2,0,1), labels, probs_sizes, label_sizes).cuda()
-      loss = loss + ctc_loss(labels_pred2.permute(2,0,1), labels, probs_sizes, label_sizes).cuda()
       ctc_loss_count += 1
       
       if debug:
@@ -392,15 +342,12 @@ def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, g
         if gt_txt[k] in codec_rev:                
           gt_labels.append( codec_rev[gt_txt[k]] )
         else:
-          print('Unknown char: {} in {}'.format(gt_txt[k], fns[gt_id] ))
+          print('Unknown char: {0}'.format(gt_txt[k]) )
           gt_labels.append( 3 )
       gt_labels.append(codec_rev[' '])
-      
-      try:    
-        if 'ARABIC' in ud.name(gt_txt[0]):
-            gt_labels = gt_labels[::-1]
-      except:
-        print(gt_txt)
+          
+      if 'ARABIC' in ud.name(gt_txt[0]):
+          gt_labels = gt_labels[::-1]
       
       features = net.forward_features(x)
       labels_pred = net.forward_ocr(features)
@@ -449,19 +396,17 @@ def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, g
      
 def main(opts):
   
-  model_name = 'OCT-E2E-MLT'
+  model_name = 'E2E-MLT'
   net = ModelResNetSep2(attention=True)
   print("Using {0}".format(model_name))
   
   learning_rate = opts.base_lr
-  if opts.cuda:
-    net.cuda()
   optimizer = torch.optim.Adam(net.parameters(), lr=opts.base_lr, weight_decay=weight_decay)
   step_start = 0  
   if os.path.exists(opts.model):
     print('loading model from %s' % args.model)
-    step_start, learning_rate = net_utils.load_net(args.model, net, optimizer)
-  step_start = 0
+    step_start, learning_rate = net_utils.load_net(args.model, net)
+  
   if opts.cuda:
     net.cuda()
     
@@ -481,7 +426,6 @@ def main(opts):
   ctc_loss = CTCLoss()
   
   ctc_loss_val = 0
-  ctc_loss_val2 = 0
   box_loss_val = 0
   good_all = 0
   gt_all = 0
@@ -524,8 +468,8 @@ def main(opts):
        
     try:
       
-      if step > 10000 or True: #this is just extra augumentation step ... in early stage just slows down training
-        ctcl, gt_b_good, gt_b_all = process_boxes(images, im_data, seg_pred[0], roi_pred[0], angle_pred[0], score_maps, gt_idxs, gtso, lbso, features, net, ctc_loss, opts, debug=opts.debug, fns=image_fns)
+      if step > 100000: #this is just extra augumentation step ... in early stage just slows down training
+        ctcl, gt_b_good, gt_b_all = process_boxes(images, im_data, seg_pred[0], roi_pred[0], angle_pred[0], score_maps, gt_idxs, gtso, lbso, features, net, ctc_loss, opts, debug=opts.debug)
         ctc_loss_val += ctcl.data.cpu().numpy()[0]
         loss = loss + ctcl
         gt_all += gt_b_all
@@ -542,7 +486,6 @@ def main(opts):
       loss_ocr = ctc_loss(labels_pred.permute(2,0,1), labels, probs_sizes, label_sizes) / im_data_ocr.size(0) * 0.5
       
       loss_ocr.backward()
-      ctc_loss_val2 += loss_ocr.item()
       loss.backward()
       
       optimizer.step()
@@ -589,11 +532,10 @@ def main(opts):
       seg_loss /= cnt
       angle_loss /= cnt
       ctc_loss_val /= cnt
-      ctc_loss_val2 /= cnt
       box_loss_val /= cnt
       try:
-        print('epoch %d[%d], loss: %.3f, bbox_loss: %.3f, seg_loss: %.3f, ang_loss: %.3f, ctc_loss: %.3f, rec: %.5f lv2 %.3f' % (
-          step / batch_per_epoch, step, train_loss, bbox_loss, seg_loss, angle_loss, ctc_loss_val, good_all / max(1, gt_all), ctc_loss_val2))
+        print('epoch %d[%d], loss: %.3f, bbox_loss: %.3f, seg_loss: %.3f, ang_loss: %.3f, ctc_loss: %.3f, rec: %.5f in %.3f' % (
+          step / batch_per_epoch, step, train_loss, bbox_loss, seg_loss, angle_loss, ctc_loss_val, good_all / max(1, gt_all), end - start))
       except:
         import sys, traceback
         traceback.print_exc(file=sys.stdout)
@@ -615,30 +557,23 @@ def main(opts):
       state = {'step': step,
                'learning_rate': learning_rate,
               'state_dict': net.state_dict(),
-              'optimizer': optimizer.state_dict(),
-              'max_memory_allocated': torch.cuda.max_memory_allocated()}
+              'optimizer': optimizer.state_dict()}
       torch.save(state, save_name)
-      print('save model: {}\tmax memory: {}'.format(save_name, torch.cuda.max_memory_allocated()))
-  save_name = os.path.join(opts.save_path, '{}.h5'.format(model_name))
-  state = {'step': step,
-           'learning_rate': learning_rate,
-          'state_dict': net.state_dict(),
-          'optimizer': optimizer.state_dict()}
-  torch.save(state, save_name)
-  print('save model: {}'.format(save_name))
+      print('save model: {}'.format(save_name))
+
 
 import argparse
 
 if __name__ == '__main__': 
   
   parser = argparse.ArgumentParser()
-  parser.add_argument('-train_list', default='dataset/images/trainMLT.txt')
-  parser.add_argument('-ocr_feed_list', default='dataset/crops/icdar-2015-Ch4/gt.txt')
+  parser.add_argument('-train_list', default='sample_train_data/MLT/trainMLT.txt')
+  parser.add_argument('-ocr_feed_list', default='sample_train_data/MLT_CROPS/gt.txt')
   parser.add_argument('-save_path', default='backup')
-  parser.add_argument('-model', default='')
-  parser.add_argument('-debug', type=int, default=0)
-  parser.add_argument('-batch_size', type=int, default=32)
-  parser.add_argument('-ocr_batch_size', type=int, default=256)
+  parser.add_argument('-model', default='e2e-mlt.h5')
+  parser.add_argument('-debug', type=int, default=1)
+  parser.add_argument('-batch_size', type=int, default=2)
+  parser.add_argument('-ocr_batch_size', type=int, default=1)
   parser.add_argument('-num_readers', type=int, default=1)
   parser.add_argument('-cuda', type=bool, default=True)
   parser.add_argument('-input_size', type=int, default=256)
@@ -648,4 +583,3 @@ if __name__ == '__main__':
   
   args = parser.parse_args()  
   main(args)
-  

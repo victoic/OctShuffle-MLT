@@ -261,8 +261,11 @@ def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, g
           print('Unknown char: {} in {}'.format(gt_txt[k], fns[gt_id] ))
           gt_labels.append( 3 )
           
-      if 'ARABIC' in ud.name(gt_txt[0]):
-          gt_labels = gt_labels[::-1]
+      try:    
+        if 'ARABIC' in ud.name(gt_txt[0]):
+            gt_labels = gt_labels[::-1]
+      except:
+        print(gt_txt)
       gt_labels.append( codec_rev[' '] )
       
       
@@ -385,9 +388,12 @@ def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, g
           print('Unknown char: {} in {}'.format(gt_txt[k], fns[gt_id] ))
           gt_labels.append( 3 )
       gt_labels.append(codec_rev[' '])
-          
-      if 'ARABIC' in ud.name(gt_txt[0]):
-          gt_labels = gt_labels[::-1]
+      
+      try:    
+        if 'ARABIC' in ud.name(gt_txt[0]):
+            gt_labels = gt_labels[::-1]
+      except:
+        print(gt_txt)
       
       features = net.forward_features(x)
       labels_pred = net.forward_ocr(features)

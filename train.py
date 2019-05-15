@@ -396,7 +396,7 @@ def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, g
      
 def main(opts):
   
-  model_name = 'E2E-MLT'
+  model_name = 'OCT-E2E-MLT'
   net = ModelResNetSep2(attention=True)
   print("Using {0}".format(model_name))
   

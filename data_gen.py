@@ -599,7 +599,7 @@ def generator(input_size=512, batch_size=4, train_list='/home/klara/klara/home/D
 
         allow_empty = False
         
-        print(im_name)
+        #print(im_name)
         name = os.path.basename(im_name)
         name = name[:-4]
 

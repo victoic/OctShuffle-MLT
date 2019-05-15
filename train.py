@@ -607,8 +607,8 @@ import argparse
 if __name__ == '__main__': 
   
   parser = argparse.ArgumentParser()
-  parser.add_argument('-train_list', default='../MobileMLT/dataset/images/trainMLT.txt')
-  parser.add_argument('-ocr_feed_list', default='../MobileMLT/dataset/crops/icdar-2015-Ch4/gt.txt')
+  parser.add_argument('-train_list', default='dataset/images/trainMLT.txt')
+  parser.add_argument('-ocr_feed_list', default='dataset/crops/icdar-2015-Ch4/gt.txt')
   parser.add_argument('-save_path', default='backup')
   parser.add_argument('-model', default='')
   parser.add_argument('-debug', type=int, default=0)

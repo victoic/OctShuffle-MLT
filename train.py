@@ -281,8 +281,8 @@ def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, g
       print("===================")
       print("features: {} {} fs2: {} {}".format(features_hf.shape, features_lf.shape, fs2_hf.shape, fs2_lf.shape))
       
-      offset_hf = round((fs2_hf.size(2) - features_hf.size(2)) / 2)
-      offset_hf_2 = round((fs2_hf.size(3) - features_hf.size(3)) / 2)
+      offset_hf = (fs2_hf.size(2) - features_hf.size(2)) // 2
+      offset_hf_2 = (fs2_hf.size(3) - features_hf.size(3)) // 2
 
       offset_lf = round((fs2_lf.size(2) - features_lf.size(2)) / 2)
       offset_lf_2 = round((fs2_lf.size(3) - features_lf.size(3)) / 2)

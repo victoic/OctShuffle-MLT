@@ -51,8 +51,6 @@ def load_annotation(filelist):
 def eval_detection(opts, net=None):
   if net == None:
     net = ModelResNetSep2(attention=True)
-    if opts.change_block:
-      net.change_blocks()
     net_utils.load_net(opts.model, net)
     if opts.cuda:
       net.cuda()
@@ -116,7 +114,6 @@ if __name__ == '__main__':
   parser.add_argument('-input_size', type=int, default=256)
   parser.add_argument('-geo_type', type=int, default=0)
   parser.add_argument('-base_lr', type=float, default=0.0001)
-  parser.add_argument('-change_block', type=bool, default=True)
 
   args = parser.parse_args()
   eval_detection(args)

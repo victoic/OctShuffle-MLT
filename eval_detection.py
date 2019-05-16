@@ -117,7 +117,3 @@ if __name__ == '__main__':
 
   args = parser.parse_args()
   eval_detection(args)
- parser.add_argument('-change_block', type=bool, default=True)
-
-  args = parser.parse_args()
-  eval_detection(args)

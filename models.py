@@ -10,7 +10,7 @@ import torch.nn.functional as F
 import numpy as np
 
 from octconv import OctConv2d
-from models.shufflenet import ShuffleNet
+from shufflenet import ShuffleNet
 from torch.nn import LeakyReLU, Conv2d, Dropout2d, LogSoftmax, InstanceNorm2d
 
 import math    

@@ -10,6 +10,7 @@ import torch.nn.functional as F
 import numpy as np
 
 from octconv import OctConv2d
+from models.shufflenet import ShuffleNet
 from torch.nn import LeakyReLU, Conv2d, Dropout2d, LogSoftmax, InstanceNorm2d
 
 import math    
@@ -277,6 +278,28 @@ class BasicBlockSepIn(nn.Module):
     out = self.relu(out)
     return out
   
+class Fire(nn.Module):
+    def __init__(self, inplanes, squeeze_planes,
+                 expand1x1_planes, expand3x3_planes):
+        super(Fire, self).__init__()
+        self.inplanes = inplanes
+        self.group1 = nn.Sequential(
+            OctConv2d(inplanes, squeeze_planes, 1),
+            _ReLU6(inplace=True)
+        )
+        self.group2 = nn.Sequential(
+            OctConv2d(squeeze_planes, expand1x1_planes, 1),
+            _ReLU6(inplace=True)
+        )
+        self.group3 = nn.Sequential(
+            OctConv2d(squeeze_planes, expand3x3_planes, 3, padding=1),
+            _ReLU6(inplace=True)
+        )
+        self.cat = _Cat()
+    def forward(self, x):
+        x = self.group1(x)
+        return self.cat([self.group2(x),self.group3(x)], dim=1)
+        
 def iou_loss(roi_gt, byte_mask, roi_pred, box_loss_value):
   d1_gt = roi_gt[:, :, :, 0][byte_mask]
   d2_gt = roi_gt[:, :, :, 1][byte_mask] 
@@ -367,7 +390,7 @@ class ModelResNetSep2(nn.Module):
     self.leaky = _LeakyReLU(negative_slope=0.01, inplace=True)
     self.leaky2 = LeakyReLU(negative_slope=0.01, inplace=True)
     
-    self.layer1 = self._make_layer(BasicBlockIn, 64, 3, stride=1)
+    self.layer1 = self._make_layer(BasicBlockIn, 24, 3, stride=1)
     self.inplanes = 64
     self.layer2 = self._make_layer(BasicBlockIn, 128, 4, stride=2, alpha=alpha)
     self.layer3 = self._make_layer(BasicBlockSepIn, 256, 6, stride=2, alpha=alpha)
@@ -376,11 +399,20 @@ class ModelResNetSep2(nn.Module):
     self.feature4 = OctConv2d(512, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
     self.feature3 = OctConv2d(256, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
     self.feature2 = OctConv2d(128, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
+
+    shufflenet = ShuffleNet()
+    self.layer2 = shufflenet.stage2
+    self.layer3 = shufflenet.stage3
+    self.layer4 = shufflenet.stage4
+
+    self.feature4 = OctConv2d(960, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
+    self.feature3 = OctConv2d(480, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
+    self.feature2 = OctConv2d(240, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
     
     self.upconv2 = conv_dw_plain(256, 256, stride=1, alpha=0)
     self.upconv1 = conv_dw_plain(256, 256, stride=1, alpha=0)
     
-    self.feature1 = OctConv2d(64, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
+    self.feature1 = OctConv2d(24, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
     
     self.act = OctConv2d(256, 1, 1, padding=0, stride=1, alpha=0)
     self.rbox = OctConv2d(256, 4, 1, padding=0, stride=1, alpha=0)
@@ -655,6 +687,15 @@ class ModelMLTRCTW(nn.Module):
     
     self.feature1 = OctConv2d(64, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
     
+    shufflenet = ShuffleNet()
+    self.layer2 = shufflenet.stage2
+    self.layer3 = shufflenet.stage3
+    self.layer4 = shufflenet.stage4
+
+    self.feature4 = OctConv2d(960, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
+    self.feature3 = OctConv2d(480, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
+    self.feature2 = OctConv2d(240, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
+
     self.act = Conv2d(256, 1, 1, padding=0, stride=1, alpha=0)
     self.rbox = Conv2d(256, 4, 1, padding=0, stride=1, alpha=0)
     

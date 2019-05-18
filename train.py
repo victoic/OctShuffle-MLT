@@ -556,7 +556,7 @@ def main(opts):
               'optimizer': best_optimizer}
         torch.save(state, save_name)
         print('save model: {}'.format(save_name))
-        batch_per_epoch = opts.max_iters = step
+        opts.max_iters = step
         early_stop = True
 
       try:

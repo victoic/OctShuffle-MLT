@@ -61,6 +61,8 @@ def eval_detection(opts, net=None):
   false_negatives = 0
   
   for i in range(images.shape[0]):
+    new_dim = round(images[0].shape[0]/32)*32, round(images[1].shape[1]/32)*32, images[2]
+    images[i] = cv2.resize(images[i], new_dim)
     image = np.expand_dims(images[i], axis=0)
     image_boxes_gt = np.array(gt_boxes[i])
 

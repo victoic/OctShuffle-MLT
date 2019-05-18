@@ -25,9 +25,18 @@ class _Cat(nn.Module):
     return torch.cat((hf1, hf2), dim), torch.cat((lf1, lf2), dim)
 
 def _avg_pool2d(input, kernel_size, stride=None, padding=0, ceil_mode=False, count_include_pad=True):
+    #hf, lf = input
+    #CHANGE TO F.interpolate()
+    #hf = F.avg_pool2d(hf, kernel_size=kernel_size, stride=stride, padding=padding, ceil_mode=ceil_mode, count_include_pad=count_include_pad)
+    #lf = F.avg_pool2d(lf, kernel_size=kernel_size, stride=stride, padding=padding, ceil_mode=ceil_mode, count_include_pad=count_include_pad)
+    return _downsample2x(input)
+
+def _downsample2x(input):
     hf, lf = input
-    hf = F.avg_pool2d(hf, kernel_size=kernel_size, stride=stride, padding=padding, ceil_mode=ceil_mode, count_include_pad=count_include_pad)
-    lf = F.avg_pool2d(lf, kernel_size=kernel_size, stride=stride, padding=padding, ceil_mode=ceil_mode, count_include_pad=count_include_pad)
+    new_hf_dim = int(hf.shape[2]/2), int(hf.shape[3]/2)
+    new_lf_dim = int(lf.shape[2]/2), int(lf.shape[3]/2)
+    hf = F.interpolate(hf, new_hf_dim, mode='bilinear', align_corners=True)
+    lf = F.interpolate(lf, new_lf_dim, mode='bilinear', align_corners=True)
     return hf, lf
 
 class _ReLU(nn.Module):

@@ -437,7 +437,7 @@ def main(opts):
   best_learning_rate = learning_rate
   max_patience = 10000
   early_stop = False
-  
+
   for step in range(step_start, opts.max_iters):
     
     # batch
@@ -550,7 +550,7 @@ def main(opts):
       if best_step - step > max_patience:
         print("Early stopped criteria achieved.")
         save_name = os.path.join(opts.save_path, 'BEST_{}_{}.h5'.format(model_name, best_step))
-        state = {'step': ,
+        state = {'step': best_step,
                'learning_rate': best_learning_rate,
               'state_dict': best_model,
               'optimizer': best_optimizer}

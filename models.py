@@ -51,7 +51,7 @@ class _InstanceNorm2d(nn.Module):
     return self.inh(hf), self.inl(lf)
 
 class _BatchNorm2d(nn.Module):
-  def __init__(self, num_features, alpha_in=0.25, alpha_out=0.25, eps=1e-5, momentum=0.1, affine=True,
+  def __init__(self, num_features, alpha_in=0.5, alpha_out=0.5, eps=1e-5, momentum=0.1, affine=True,
                track_running_stats=True):
     super(_BatchNorm2d, self).__init__()
     hf_ch = int(num_features * (1 - alpha_out))

@@ -571,7 +571,7 @@ class ModelResNetSep2(nn.Module):
     self.groups = 3
     self.stage_out_channels = [-1, 24, 240, 480, 960]
     self.stage_repeats = [3, 7, 3]
-    self.layer1 = self._make_layer(BasicBlockIn, 64, 3, stride=1, alpha=alpha)
+    self.layer1 = self._make_layer(BasicBlockIn, 24, 3, stride=1, alpha=alpha)
     self.layer2 = self._make_stage(2)
     self.layer3 = self._make_stage(3)
     self.layer4 = self._make_stage(4)

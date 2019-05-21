@@ -571,7 +571,7 @@ class ModelResNetSep2(nn.Module):
     self.groups = 3
     self.stage_out_channels = [-1, 24, 240, 480, 960]
     self.stage_repeats = [3, 7, 3]
-    self.layer1 = self._make_layer(BasicBlockIn, 64, 3, stride=1)
+    self.layer1 = self._make_layer(BasicBlockIn, 64, 3, stride=1, alpha=alpha)
     self.layer2 = self._make_stage(2)
     self.layer3 = self._make_stage(3)
     self.layer4 = self._make_stage(4)
@@ -603,22 +603,22 @@ class ModelResNetSep2(nn.Module):
     
     self.multi_scale = multi_scale
 
-  def _make_layer(self, block, planes, blocks, stride=1):
+  def _make_layer(self, block, planes, blocks, stride=1, alpha=0.5):
     
     downsample = None
     if stride != 1 or self.inplanes != planes * block.expansion:
       downsample = nn.Sequential(
   
-        nn.Conv2d(self.inplanes, planes * block.expansion,
-                  kernel_size=1, stride=stride, bias=False),
-        nn.BatchNorm2d(planes * block.expansion),
+        OctConv2d(self.inplanes, planes * block.expansion,
+                  kernel_size=1, stride=stride, bias=False, alpha=alpha),
+        _BatchNorm2d(planes * block.expansion, alpha_in=alpha, alpha_out=alpha),
       )
 
     layers = []
     layers.append(block(self.inplanes, planes, stride, downsample))
     self.inplanes = planes * block.expansion
     for i in range(1, blocks):
-      layers.append(block(self.inplanes, planes))
+      layers.append(block(self.inplanes, planes, alpha=alpha))
 
     return nn.Sequential(*layers)
   

@@ -456,28 +456,6 @@ class BasicBlockSepIn(nn.Module):
     out = self.relu(out)
     return out
   
-class Fire(nn.Module):
-    def __init__(self, inplanes, squeeze_planes,
-                 expand1x1_planes, expand3x3_planes):
-        super(Fire, self).__init__()
-        self.inplanes = inplanes
-        self.group1 = nn.Sequential(
-            OctConv2d(inplanes, squeeze_planes, 1),
-            _ReLU6(inplace=True)
-        )
-        self.group2 = nn.Sequential(
-            OctConv2d(squeeze_planes, expand1x1_planes, 1),
-            _ReLU6(inplace=True)
-        )
-        self.group3 = nn.Sequential(
-            OctConv2d(squeeze_planes, expand3x3_planes, 3, padding=1),
-            _ReLU6(inplace=True)
-        )
-        self.cat = _Cat()
-    def forward(self, x):
-        x = self.group1(x)
-        return self.cat([self.group2(x),self.group3(x)], dim=1)
-        
 def iou_loss(roi_gt, byte_mask, roi_pred, box_loss_value):
   d1_gt = roi_gt[:, :, :, 0][byte_mask]
   d2_gt = roi_gt[:, :, :, 1][byte_mask] 

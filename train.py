@@ -536,6 +536,7 @@ def main(opts):
       try:
         print('epoch %d[%d], loss: %.3f, bbox_loss: %.3f, seg_loss: %.3f, ang_loss: %.3f, ctc_loss: %.3f, rec: %.5f in %.3f' % (
           step / batch_per_epoch, step, train_loss, bbox_loss, seg_loss, angle_loss, ctc_loss_val, good_all / max(1, gt_all), end - start))
+        print('max_memory_allocated {}'.format(cuda.max_memory_allocated()))
       except:
         import sys, traceback
         traceback.print_exc(file=sys.stdout)

@@ -23,12 +23,14 @@ def load_annotation(filelist):
   list_file = open(filelist, 'r')
   gt_images = []
   gt_boxes = []
+  fns = []
 
   for line in list_file:
     if len(gt_images) % 100 == 0:
       print(len(gt_images))
     file = os.path.split(line)
     path = path_to_dir+file[0]
+    fns.append(file[0])
     gt_file = os.path.splitext('gt_'+file[1].split('\n')[0])[0]+".txt"
     gt_path = os.path.join(path,gt_file)
     with open(gt_path, 'r') as gt:
@@ -46,7 +48,7 @@ def load_annotation(filelist):
         gt_image = cv2.imread(gt_image_path)
         gt_images.append(gt_image)
         gt_boxes.append(boxes)
-  return np.array(gt_images), np.array(gt_boxes)
+  return np.array(gt_images), np.array(gt_boxes), fns
 
 def eval_detection(opts, net=None):
   if net == None:
@@ -55,7 +57,7 @@ def eval_detection(opts, net=None):
     if opts.cuda:
       net.cuda()
 
-  images, gt_boxes = load_annotation(opts.eval_list)  
+  images, gt_boxes, fns = load_annotation(opts.eval_list)  
   true_positives = 0
   false_positives = 0
   false_negatives = 0
@@ -82,6 +84,7 @@ def eval_detection(opts, net=None):
     if (opts.debug):
       print(boxes.shape)
       print(image_boxes_gt.shape)
+      print(image_boxes_gt.shape[0] == boxes.shape[0])
       print("============")
 
     false_positives += boxes.shape[0]
@@ -89,7 +92,7 @@ def eval_detection(opts, net=None):
     for box in boxes:
       b = box[0:8].reshape(4,-1)
       poly = Polygon.Polygon(b)
-      cp_image = cv2.polylines(cp_image, b, True, (255,120,255))
+      color=(239,19,19)
       for box_gt in image_boxes_gt:
         b_gt = box_gt[0:8].reshape(4,-1)
         poly_gt = Polygon.Polygon(b_gt)
@@ -97,15 +100,19 @@ def eval_detection(opts, net=None):
         union = poly_gt & poly
         iou = (intersection.area()+1.0) / (union.area()+1.0)-1.0
         if iou > 0.5:
+          color = (255,120,255)
           true_positives+=1
           false_negatives-=1
           false_positives-=1
           image_boxes_gt = np.array([bgt for bgt in image_boxes_gt if not np.array_equal(bgt, box_gt)])
           break
-    if (false_positives == 0, false_negatives == 0, true_positives == boxes.shape[0]):
-      cv2.imwrite(os.path.join(result_path, "successes", "image_"+[i]+".png"), cp_image)
+      cp_image = cv2.polylines(cp_image, [np.array(b, np.int32)], True, color)
+    if (image_boxes_gt.shape[0] == boxes.shape[0]):
+      dir_path = os.path.join(result_path, "successes/")
     else:
-      cv2.imwrite(os.path.join(result_path, "image_"+[i]+".png"), cp_image)
+      dir_path = result_path
+    file_name = fns[i]".png"
+    cv2.imwrite(os.path.join(dir_path, file_name), cp_image)
 
   print("tp: {} fp: {} fn: {}".format(true_positives, false_positives, false_negatives))
   precision = true_positives / (true_positives+false_positives)

@@ -505,7 +505,7 @@ class OctShuffleMLT(nn.Module):
     self.layer0_1[2].recompute_weights()
             
   def __init__(self, attention = False, multi_scale = True):
-    super(ModelResNetSep2, self).__init__()
+    super(OctShuffleMLT, self).__init__()
     
     self.inplanes = 64
     alpha = 0.5

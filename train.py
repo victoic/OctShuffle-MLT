@@ -16,7 +16,7 @@ import timeit
 import math
 import random
 
-from models import ModelResNetSep2
+from models import OctMLT
 import torch.autograd as autograd
 import torch.nn.functional as F
 
@@ -397,7 +397,7 @@ def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, g
 def main(opts):
   
   model_name = 'OCT-E2E-MLT'
-  net = ModelResNetSep2(attention=True)
+  net = OctMLT(attention=True)
   print("Using {0}".format(model_name))
   
   learning_rate = opts.base_lr
@@ -429,7 +429,14 @@ def main(opts):
   box_loss_val = 0
   good_all = 0
   gt_all = 0
-  
+
+  best_step = step_start
+  best_loss = 1000000
+  best_model = net.state_dict()
+  best_optimizer = optimizer.state_dict()
+  best_learning_rate = learning_rate
+  max_patience = 3000
+  early_stop = False  
   
   for step in range(step_start, opts.max_iters):
     
@@ -468,7 +475,7 @@ def main(opts):
        
     try:
       
-      if step > 100000: #this is just extra augumentation step ... in early stage just slows down training
+      if step > 10000: #this is just extra augumentation step ... in early stage just slows down training
         ctcl, gt_b_good, gt_b_all = process_boxes(images, im_data, seg_pred[0], roi_pred[0], angle_pred[0], score_maps, gt_idxs, gtso, lbso, features, net, ctc_loss, opts, debug=opts.debug)
         ctc_loss_val += ctcl.data.cpu().numpy()[0]
         loss = loss + ctcl
@@ -533,6 +540,24 @@ def main(opts):
       angle_loss /= cnt
       ctc_loss_val /= cnt
       box_loss_val /= cnt
+
+      if train_loss < best_loss:
+        best_step = step 
+        best_model = net.state_dict()
+        best_loss = train_loss
+        best_learning_rate = learning_rate
+        best_optimizer = optimizer.state_dict()
+      if best_step - step > max_patience:
+        print("Early stopped criteria achieved.")
+        save_name = os.path.join(opts.save_path, 'BEST_{}_{}.h5'.format(model_name, best_step))
+        state = {'step': best_step,
+               'learning_rate': best_learning_rate,
+              'state_dict': best_model,
+              'optimizer': best_optimizer}
+        torch.save(state, save_name)
+        print('save model: {}'.format(save_name))
+        opts.max_iters = step
+        early_stop = True
       try:
         print('epoch %d[%d], loss: %.3f, bbox_loss: %.3f, seg_loss: %.3f, ang_loss: %.3f, ctc_loss: %.3f, rec: %.5f in %.3f' % (
           step / batch_per_epoch, step, train_loss, bbox_loss, seg_loss, angle_loss, ctc_loss_val, good_all / max(1, gt_all), end - start))
@@ -562,13 +587,14 @@ def main(opts):
               'max_memory_allocated': torch.cuda.max_memory_allocated()}
       torch.save(state, save_name)
       print('save model: {}\tmax memory: {}'.format(save_name, torch.cuda.max_memory_allocated()))
-  save_name = os.path.join(opts.save_path, '{}.h5'.format(model_name))
-  state = {'step': step,
-           'learning_rate': learning_rate,
-          'state_dict': net.state_dict(),
-          'optimizer': optimizer.state_dict()}
-  torch.save(state, save_name)
-  print('save model: {}'.format(save_name))
+  if not early_stop:
+    save_name = os.path.join(opts.save_path, '{}.h5'.format(model_name))
+    state = {'step': step,
+             'learning_rate': learning_rate,
+            'state_dict': net.state_dict(),
+            'optimizer': optimizer.state_dict()}
+    torch.save(state, save_name)
+    print('save model: {}'.format(save_name))
 
 
 import argparse
@@ -577,7 +603,7 @@ if __name__ == '__main__':
   
   parser = argparse.ArgumentParser()
   parser.add_argument('-train_list', default='dataset/images/trainMLT.txt')
-  parser.add_argument('-ocr_feed_list', default='dataset/crops/icdar-2015-Ch4/gt.txt')
+  parser.add_argument('-ocr_feed_list', default='dataset/crops/crop_list.txt')
   parser.add_argument('-save_path', default='backup')
   parser.add_argument('-model', default='')
   parser.add_argument('-debug', type=int, default=0)

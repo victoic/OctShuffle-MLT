@@ -111,7 +111,7 @@ def eval_detection(opts, net=None):
       dir_path = os.path.join(result_path, "successes/")
     else:
       dir_path = result_path
-    file_name = fns[i]".png"
+    file_name = fns[i]+".png"
     cv2.imwrite(os.path.join(dir_path, file_name), cp_image)
 
   print("tp: {} fp: {} fn: {}".format(true_positives, false_positives, false_negatives))

@@ -102,6 +102,7 @@ def eval_detection(opts, net=None):
   precision = true_positives / (true_positives+false_positives)
   recall = true_positives / (true_positives+false_negatives)
   f_score = 2*precision*recall/(precision+recall)
+  print("True Positives: {} \t False Positives: {} \t False Negatives: {}".format(true_positives, false_positives, false_negatives))
   print("PRECISION: {} \t RECALL: {} \t F SCORE: {}".format(precision, recall, f_score))
 
 if __name__ == '__main__':

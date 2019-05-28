@@ -496,7 +496,7 @@ def iou_loss(roi_gt, byte_mask, roi_pred, box_loss_value):
   if AABB_r.dim() > 0:
     box_loss_value += torch.mean(AABB_r)
   
-class ModelResNetSep2(nn.Module):
+class OctShuffleMLT(nn.Module):
   
   def recompute(self):
     self.layer0[0].recompute_weights()

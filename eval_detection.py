@@ -89,7 +89,7 @@ def eval_detection(opts, net=None):
     for box in boxes:
       b = box[0:8].reshape(4,-1)
       poly = Polygon.Polygon(b)
-      cp_image = cv.polylines(cp_image, b, True, (255,120,255))
+      cp_image = cv2.polylines(cp_image, b, True, (255,120,255))
       for box_gt in image_boxes_gt:
         b_gt = box_gt[0:8].reshape(4,-1)
         poly_gt = Polygon.Polygon(b_gt)

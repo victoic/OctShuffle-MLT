@@ -19,4 +19,4 @@ if __name__ == '__main__':
   parser.add_argument('-txt_name', default='trainMLT.txt')
 
   args = parser.parse_args()
-  make_list(args.images_path, args.txt_path)
+  make_list(args.images_path, args.txt_name)

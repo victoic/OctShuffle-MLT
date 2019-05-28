@@ -435,7 +435,7 @@ def main(opts):
   best_model = net.state_dict()
   best_optimizer = optimizer.state_dict()
   best_learning_rate = learning_rate
-  max_patience = 10000
+  max_patience = 3000
   early_stop = False
 
   for step in range(step_start, opts.max_iters):
@@ -475,7 +475,7 @@ def main(opts):
        
     try:
       
-      if step > 100000: #this is just extra augumentation step ... in early stage just slows down training
+      if step > 10000: #this is just extra augumentation step ... in early stage just slows down training
         ctcl, gt_b_good, gt_b_all = process_boxes(images, im_data, seg_pred[0], roi_pred[0], angle_pred[0], score_maps, gt_idxs, gtso, lbso, features, net, ctc_loss, opts, debug=opts.debug)
         ctc_loss_val += ctcl.data.cpu().numpy()[0]
         loss = loss + ctcl
@@ -603,7 +603,7 @@ if __name__ == '__main__':
   
   parser = argparse.ArgumentParser()
   parser.add_argument('-train_list', default='dataset/images/trainMLT.txt')
-  parser.add_argument('-ocr_feed_list', default='dataset/crops/icdar-2015-Ch4/gt.txt')
+  parser.add_argument('-ocr_feed_list', default='dataset/crops/crops_list.txt')
   parser.add_argument('-save_path', default='backup')
   parser.add_argument('-model', default='')
   parser.add_argument('-debug', type=int, default=0)

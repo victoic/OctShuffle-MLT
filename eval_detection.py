@@ -8,7 +8,7 @@ import cv2
 import data_gen
 from data_gen import draw_box_points
 import net_utils
-from models import ModelResNetSep2
+from models import OctShuffleMLT
 
 import unicodedata as ud
 
@@ -50,7 +50,7 @@ def load_annotation(filelist):
 
 def eval_detection(opts, net=None):
   if net == None:
-    net = ModelResNetSep2(attention=True)
+    net = OctShuffleMLT(attention=True)
     net_utils.load_net(opts.model, net)
     if opts.cuda:
       net.cuda()
@@ -59,9 +59,12 @@ def eval_detection(opts, net=None):
   true_positives = 0
   false_positives = 0
   false_negatives = 0
+
+  result_path = "/test_results"
   
   for i in range(images.shape[0]):
     image = np.expand_dims(images[i], axis=0)
+    cp_image = image
     image_boxes_gt = np.array(gt_boxes[i])
 
     im_data = net_utils.np_to_variable(image, is_cuda=opts.cuda).permute(0, 3, 1, 2)
@@ -86,6 +89,7 @@ def eval_detection(opts, net=None):
     for box in boxes:
       b = box[0:8].reshape(4,-1)
       poly = Polygon.Polygon(b)
+      cp_image = cv.polylines(cp_image, b, True, (255,120,255))
       for box_gt in image_boxes_gt:
         b_gt = box_gt[0:8].reshape(4,-1)
         poly_gt = Polygon.Polygon(b_gt)
@@ -98,6 +102,8 @@ def eval_detection(opts, net=None):
           false_positives-=1
           image_boxes_gt = np.array([bgt for bgt in image_boxes_gt if not np.array_equal(bgt, box_gt)])
           break
+    cv2.imwrite(os.path.join(result_path, "image_"+[i]+".png"), cp_image)
+    
   print("tp: {} fp: {} fn: {}".format(true_positives, false_positives, false_negatives))
   precision = true_positives / (true_positives+false_positives)
   recall = true_positives / (true_positives+false_negatives)

@@ -102,8 +102,11 @@ def eval_detection(opts, net=None):
           false_positives-=1
           image_boxes_gt = np.array([bgt for bgt in image_boxes_gt if not np.array_equal(bgt, box_gt)])
           break
-    cv2.imwrite(os.path.join(result_path, "image_"+[i]+".png"), cp_image)
-    
+    if (false_positives == 0, false_negatives == 0, true_positives == boxes.shape[0]):
+      cv2.imwrite(os.path.join(result_path, "successes", "image_"+[i]+".png"), cp_image)
+    else:
+      cv2.imwrite(os.path.join(result_path, "image_"+[i]+".png"), cp_image)
+
   print("tp: {} fp: {} fn: {}".format(true_positives, false_positives, false_negatives))
   precision = true_positives / (true_positives+false_positives)
   recall = true_positives / (true_positives+false_negatives)

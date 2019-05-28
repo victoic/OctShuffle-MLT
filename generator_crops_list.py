@@ -1,3 +1,4 @@
+import argparse
 import os
 def generate_crops_list(path = "./dataset/crops/"):
     list_file = open(path+"crops_list.txt", "w")
@@ -10,5 +11,8 @@ def generate_crops_list(path = "./dataset/crops/"):
                     list_file.write('%s/%s' % (rel_dir, line))
                 txt.close()
     list_file.close()
-if __name__ == '__main__': 
-    generate_crops_list()
+if __name__ == '__main__':
+  parser = argparse.ArgumentParser()
+  parser.add_argument('-path', default="./dataset/crops/")
+  args = parser.parse_args()
+  generate_crops_list(args.path)

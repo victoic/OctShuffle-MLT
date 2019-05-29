@@ -16,7 +16,7 @@ import argparse
 import math
 
 from data_gen import draw_box_points
-from models import ModelMLTRCTW
+from models import OctShuffleMLT
 from ocr_utils import print_seq_ext
 
 from demo import resize_image
@@ -380,7 +380,7 @@ if __name__ == '__main__':
   
   args = parser.parse_args()
   
-  net = ModelMLTRCTW(attention=True)
+  net = OctShuffleMLT(attention=True)
   model_name = 'SemanticTexte2e'
   print("Using {0}".format(model_name))
 
@@ -633,9 +633,18 @@ if __name__ == '__main__':
         labels_pred = net.forward_ocr(features)
         
         features2 = net.forward_features(x2)
-        offset = (features2.size(2) - features.size(2)) // 2
-        offset2 = (features2.size(3) - features.size(3)) // 2
-        features2 = features2[:, :, offset:(features.size(2) + offset), offset2:-offset2]
+        features2_hf, features2_lf = features2
+        offset_hf = (features2_hf.size(2) - features[0].size(2)) // 2
+        offset_lf = (features2_lf.size(2) - features[1].size(2)) // 2
+        offset2_hf = (features2_hf.size(3) - features[0].size(3)) // 2
+        offset2_lf = (features2_lf.size(3) - features[1].size(3)) // 2
+
+        features_offsetted_hf = features2_hf[:, :, offset_hf:(features[0].size(2) + offset_hf), offset2_hf:-offset2_hf]
+
+        balance_offset_lf = (features2_lf.size(3) - 2*offset2_lf) - int(features_offsetted_hf.size(3)/2)
+        print(offset2_lf, balance_offset_lf, offset2_lf+balance_offset_lf)
+        features_offsetted_lf = features2_lf[:, :, offset_lf:(features[1].size(2) + offset_lf), offset2_lf:-(offset2_lf+balance_offset_lf)]
+        features2 = features_offsetted_hf, features_offsetted_lf
         labels_pred2 = net.forward_ocr(features2)
         
         ctc_f = labels_pred.data.cpu().numpy()

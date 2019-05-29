@@ -18,7 +18,7 @@ import pandas as pd
 from ocr_utils import print_seq_ext
 import Polygon
 
-def load_annotation(filelist):
+def load_annotation(filelist, icdar2013=False):
   path_to_dir = filelist.split(os.path.basename(filelist))[0]
   list_file = open(filelist, 'r')
   gt_images = []
@@ -40,8 +40,18 @@ def load_annotation(filelist):
         split_line = line_gt.replace('\ufeff','').split(',')
         if split_line[-1] != "###":
           found = True;
-          split_line = [float(cell) for cell in split_line[0:8]]
-          points = np.array(split_line).reshape(4,-1)
+          if(icdar2013):
+            split_line = [float(cell) for cell in split_line[0:4]]
+            pts = [
+                    [split_line[0], split_line[1]], 
+                    [split_line[0], split_line[3]], 
+                    [split_line[2], split_line[1]], 
+                    [split_line[2], split_line[3]]
+                  ]
+            points = np.array(pts).reshape(4,-1)
+          else:
+            split_line = [float(cell) for cell in split_line[0:8]]
+            points = np.array(split_line).reshape(4,-1)
           boxes.append(points)
       if found:
         gt_image_path = os.path.join(path_to_dir,line.rstrip())
@@ -57,7 +67,7 @@ def eval_detection(opts, net=None):
     if opts.cuda:
       net.cuda()
 
-  images, gt_boxes, fns = load_annotation(opts.eval_list)  
+  images, gt_boxes, fns = load_annotation(opts.eval_list, opts.icdar2013)  
   true_positives = 0
   false_positives = 0
   false_negatives = 0
@@ -129,7 +139,7 @@ if __name__ == '__main__':
   parser.add_argument('-cuda', type=bool, default=True)
   parser.add_argument('-input_size', type=int, default=256)
   parser.add_argument('-geo_type', type=int, default=0)
-  parser.add_argument('-base_lr', type=float, default=0.0001)
+  parser.add_argument('-icdar2013', type=int, default=0)
 
   args = parser.parse_args()
   eval_detection(args)

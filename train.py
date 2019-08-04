@@ -38,7 +38,6 @@ norm_height = 40
 
 f = open('codec.txt', 'r')
 codec = f.readlines()[0]
-#codec = u' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_abcdefghijklmnopqrstuvwxyz{|}~£ÁČĎÉĚÍŇÓŘŠŤÚŮÝŽáčďéěíňóřšťúůýž'
 codec_rev = {}
 index = 4
 for i in range(0, len(codec)):

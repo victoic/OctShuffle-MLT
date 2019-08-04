@@ -1,10 +1,10 @@
-# OctShuffle-MLT
+# Oct-MLT
 
 Repository for the paper OctShuffleMLT: A Compact Octave Based Neural Network for End-to-End Multilingual Text Detection and Recognition.
 
 We use E2E-MLT (https://github.com/MichalBusta/E2E-MLT) as baseline, modifying it to obtain a compacter model.
 
-To use the more robust and less compact model Oct-MLT, check the octmlt branch.
+To use the less robust and more compact model OctShuffle-MLT, check the master branch.
 
 ## Requirements
 

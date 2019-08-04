@@ -615,7 +615,7 @@ def generator(input_size=512, batch_size=4, train_list='/home/klara/klara/home/D
 
         if os.path.exists(txt_fn_gt) and (txt_fn_gt.find('/done/') != -1 or txt_fn_gt.find('/icdar-2015-Ch4/') != -1):
           text_polys, text_tags, labels_txt = load_gt_annoataion(txt_fn_gt, txt_fn_gt.find('/icdar-2015-Ch4/') != -1)
-        elif os.path.exists(txt_fn) and (txt_fn.find('/Latin/') != -1 or txt_fn.find('/Arabic/') != -1 or txt_fn.find('/Chinese/') != -1 or txt_fn.find('/Japanese/') != -1 or txt_fn.find('/Bangla/') != -1):
+        elif os.path.exists(txt_fn) and (txt_fn.find('/Latin/') != -1 or txt_fn.find('/Hindi/') != -1 or txt_fn.find('/Arabic/') != -1 or txt_fn.find('/Chinese/') != -1 or txt_fn.find('/Japanese/') != -1 or txt_fn.find('/Bangla/') != -1):
           try:
             text_polys, text_tags, labels_txt = load_annoataion(txt_fn, im)
           except:

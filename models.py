@@ -496,7 +496,7 @@ def iou_loss(roi_gt, byte_mask, roi_pred, box_loss_value):
   if AABB_r.dim() > 0:
     box_loss_value += torch.mean(AABB_r)
   
-class OctShuffleMLT(nn.Module):
+class OctMLT(nn.Module):
   
   def recompute(self):
     self.layer0[0].recompute_weights()
@@ -505,7 +505,7 @@ class OctShuffleMLT(nn.Module):
     self.layer0_1[2].recompute_weights()
             
   def __init__(self, attention = False, multi_scale = True):
-    super(OctShuffleMLT, self).__init__()
+    super(OctMLT, self).__init__()
     
     self.inplanes = 64
     alpha = 0.5

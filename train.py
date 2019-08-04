@@ -16,7 +16,7 @@ import timeit
 import math
 import random
 
-from models import OctShuffleMLT
+from models import OctMLT
 import torch.autograd as autograd
 import torch.nn.functional as F
 
@@ -395,8 +395,8 @@ def process_boxes(images, im_data, iou_pred, roi_pred, angle_pred, score_maps, g
      
 def main(opts):
   
-  model_name = 'OctShuffleMLT'
-  net = OctShuffleMLT(attention=True)
+  model_name = 'OCT-E2E-MLT'
+  net = OctMLT(attention=True)
   print("Using {0}".format(model_name))
   
   learning_rate = opts.base_lr
@@ -428,15 +428,15 @@ def main(opts):
   box_loss_val = 0
   good_all = 0
   gt_all = 0
-  
+
   best_step = step_start
   best_loss = 1000000
   best_model = net.state_dict()
   best_optimizer = optimizer.state_dict()
   best_learning_rate = learning_rate
   max_patience = 3000
-  early_stop = False
-
+  early_stop = False  
+  
   for step in range(step_start, opts.max_iters):
     
     # batch
@@ -557,10 +557,10 @@ def main(opts):
         print('save model: {}'.format(save_name))
         opts.max_iters = step
         early_stop = True
-
       try:
         print('epoch %d[%d], loss: %.3f, bbox_loss: %.3f, seg_loss: %.3f, ang_loss: %.3f, ctc_loss: %.3f, rec: %.5f in %.3f' % (
           step / batch_per_epoch, step, train_loss, bbox_loss, seg_loss, angle_loss, ctc_loss_val, good_all / max(1, gt_all), end - start))
+        print('max_memory_allocated {}'.format(torch.cuda.max_memory_allocated()))
       except:
         import sys, traceback
         traceback.print_exc(file=sys.stdout)
@@ -602,7 +602,7 @@ if __name__ == '__main__':
   
   parser = argparse.ArgumentParser()
   parser.add_argument('-train_list', default='dataset/images/trainMLT.txt')
-  parser.add_argument('-ocr_feed_list', default='dataset/crops/crops_list.txt')
+  parser.add_argument('-ocr_feed_list', default='dataset/crops/crop_list.txt')
   parser.add_argument('-save_path', default='backup')
   parser.add_argument('-model', default='')
   parser.add_argument('-debug', type=int, default=0)

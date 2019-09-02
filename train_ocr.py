@@ -23,7 +23,7 @@ import ocr_gen
 from warpctc_pytorch import CTCLoss
 from torch.autograd import Variable
 
-from models import ModelResNetSep2
+from models import OctMLT
 from ocr_test_utils import print_seq_ext
 import random
 
@@ -40,8 +40,8 @@ disp_interval = 500
      
 def main(opts):
   
-  model_name = 'E2E'
-  net = ModelResNetSep2(attention=True)
+  model_name = 'OctGatedMLT'
+  net = OctMLT(attention=True)
   acc = []
   
   if opts.cuda:
@@ -135,9 +135,9 @@ if __name__ == '__main__':
   parser.add_argument('-train_list', default='/home/busta/data/90kDICT32px/train_mlt.txt')
   parser.add_argument('-valid_list', default='/home/busta/data/icdar_ch8_validation/ocr_valid.txt')
   parser.add_argument('-save_path', default='backup2')
-  parser.add_argument('-model', default='/mnt/textspotter/tmp/DS_CVPR/backup2/ModelResNetSep2_25000.h5')
+  parser.add_argument('-model', default='')
   parser.add_argument('-debug', type=int, default=0)
-  parser.add_argument('-batch_size', type=int, default=4)
+  parser.add_argument('-batch_size', type=int, default=32)
   parser.add_argument('-num_readers', type=int, default=1)
   parser.add_argument('-cuda', type=bool, default=True)
   parser.add_argument('-norm_height', type=int, default=40)

@@ -20,7 +20,7 @@ import argparse
 
 import ocr_gen
 
-from warpctc_pytorch import CTCLoss
+from torch_baidu_ctc import ctc_loss, CTCLoss
 from torch.autograd import Variable
 
 from models import OctMLT

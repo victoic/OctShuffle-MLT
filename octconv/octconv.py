@@ -5,11 +5,13 @@ from torch import mul
 class GatedConv(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, bias=False, dilation=1, groups=1, activation=nn.Sigmoid()):
         super(GatedConv, self).__init__()
-        self.half_channels = in_channels/2
+        self.half_channels = in_channels
         self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, stride=stride, padding=padding, bias=bias, dilation=dilation, groups=groups)
         self.activation_1 = activation
 
     def forward(self, x):
+        print(x.shape)
+        print(self.half_channels)
         x = self.conv(x)
         x_1 = self.activation_1(x[:,:,:self.half_channels])
         x_2 = x[:,:,self.half_channels:]

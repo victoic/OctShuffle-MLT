@@ -10,16 +10,9 @@ class GatedConv(nn.Module):
         self.activation_1 = activation
 
     def forward(self, x):
-        print(self.half_channels)
         x = self.conv(x)
-        print(x.shape)
-        x_1 = x[:,0:self.half_channels,:,:]
-        print(x_1.shape)
-        x_1 = self.activation_1(x_1)
-        print(x_1.shape)
+        x_1 = self.activation_1(x[:,0:self.half_channels,:,:])
         x_2 = x[:,self.half_channels:,:,:]
-        print(x_2.shape)
-        print()
 
         return mul(x_1,x_2)
 

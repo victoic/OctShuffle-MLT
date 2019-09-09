@@ -66,7 +66,6 @@ def main(opts):
 
   if opts.freeze_shared:
     net_utils.freeze_shared(net)
-    print(net.layer0.bias.requires_grad)
 
   if opts.freeze_ocr:
     net_utils.freeze_ocr(net)

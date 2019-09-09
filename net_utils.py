@@ -52,4 +52,69 @@ def load_net(fname, net, optimizer=None, load_shared=True, load_ocr=True, load_d
   
   print(fname)
   return step, learning_rate 
-  
+
+  def freeze_shared(net):
+    for params in net.layer0.parameters():
+      params.requires_grad = False
+    for params in net.layer0_1.parameters():
+      params.requires_grad = False
+
+  def freeze_detection(net):
+    for params in net.layer1.parameters():
+      params.requires_grad = False
+    for params in net.layer2.parameters():
+      params.requires_grad = False
+    for params in net.layer3.parameters():
+      params.requires_grad = False
+    for params in net.layer4.parameters():
+      params.requires_grad = False
+    for params in net.feature1.parameters():
+      params.requires_grad = False
+    for params in net.feature2.parameters():
+      params.requires_grad = False
+    for params in net.feature3.parameters():
+      params.requires_grad = False
+    for params in net.feature4.parameters():
+      params.requires_grad = False
+    for params in net.upconv1.parameters():
+      params.requires_grad = False
+    for params in net.upconv2.parameters():
+      params.requires_grad = False
+    for params in net.act.parameters():
+      params.requires_grad = False
+    for params in net.rbox.parameters():
+      params.requires_grad = False
+    for params in net.angle.parameters():
+      params.requires_grad = False
+    for params in net.conv_attenton.parameters():
+      params.requires_grad = False
+
+  def freeze_ocr(net):
+    for params in net.conv5.parameters():
+      params.requires_grad = False
+    for params in net.conv6.parameters():
+      params.requires_grad = False
+    for params in net.conv7.parameters():
+      params.requires_grad = False
+    for params in net.conv8.parameters():
+      params.requires_grad = False
+    for params in net.conv9_1.parameters():
+      params.requires_grad = False
+    for params in net.conv9_2.parameters():
+      params.requires_grad = False
+    for params in net.conv10_s.parameters():
+      params.requires_grad = False
+    for params in net.conv11.parameters():
+      params.requires_grad = False
+    for params in net.batch5.parameters():
+      params.requires_grad = False
+    for params in net.batch6.parameters():
+      params.requires_grad = False
+    for params in net.batch7.parameters():
+      params.requires_grad = False
+    for params in net.batch8.parameters():
+      params.requires_grad = False
+    for params in net.batch9.parameters():
+      params.requires_grad = False
+    for params in net.batch10_s.parameters():
+      params.requires_grad = False

@@ -48,7 +48,7 @@ def main(opts):
     net.cuda()
     
   optimizer = torch.optim.Adam(net.parameters(), lr=base_lr, weight_decay=weight_decay)
-  step_start = 0  
+  step_start = 0
   if os.path.exists(opts.model):
     print('loading model from %s' % args.model)
     step_start, learning_rate = net_utils.load_net(args.model, net, optimizer,
@@ -60,13 +60,22 @@ def main(opts):
   else:
     learning_rate = base_lr
   
-  step_start = 0  
+  step_start = 0
 
   net.train()
+
+  if opt.freze_shared:
+    net_utils.freze_shared(net)
+    print(net.layer0.bias.requires_grad)
+
+  if opt.freze_ocr:
+    net_utils.freze_ocr(net)
+
+  if opt.freze_detection:
+    net_utils.freze_detection(net)
   
   #acc_test = test(net, codec, opts, list_file=opts.valid_list, norm_height=opts.norm_height)
   #acc.append([0, acc_test])
-    
   ctc_loss = CTCLoss()
   
   data_generator = ocr_gen.get_batch(num_workers=opts.num_readers,
@@ -151,6 +160,9 @@ if __name__ == '__main__':
   parser.add_argument('-load_ocr', type=int, default=0)
   parser.add_argument('-load_detection', type=int, default=1)
   parser.add_argument('-load_shared', type=int, default=1)
+  parser.add_argument('-freeze_shared', type=int, default=1)
+  parser.add_argument('-freeze_detection', type=int, default=1)
+  parser.add_argument('-freeze_ocr', type=int, default=0)
   
   args = parser.parse_args()  
   main(args)

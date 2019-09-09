@@ -65,14 +65,14 @@ def main(opts):
   net.train()
 
   if opt.freze_shared:
-    net_utils.freze_shared(net)
+    net_utils.freeze_shared(net)
     print(net.layer0.bias.requires_grad)
 
   if opt.freze_ocr:
-    net_utils.freze_ocr(net)
+    net_utils.freeze_ocr(net)
 
   if opt.freze_detection:
-    net_utils.freze_detection(net)
+    net_utils.freeze_detection(net)
   
   #acc_test = test(net, codec, opts, list_file=opts.valid_list, norm_height=opts.norm_height)
   #acc.append([0, acc_test])

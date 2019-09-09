@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.mm as mm
+from torch import mm
 
 class GatedConv(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, bias=False, dilation=1, groups=1, activation=nn.Sigmoid()):

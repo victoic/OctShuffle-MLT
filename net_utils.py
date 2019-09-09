@@ -36,9 +36,9 @@ def load_net(fname, net, optimizer=None, load_shared=True, load_ocr=True, load_d
 
   for k, v in net.state_dict().items():
     try:
-      if (load_shared and any(substring in k for substring in shared_layers)) or
+      if ((load_shared and any(substring in k for substring in shared_layers)) or
             (load_ocr and any(substring in k for substring in ocr_layers)) or
-            (load_detection and any(substring in k for substring in detection_layers)):
+            (load_detection and any(substring in k for substring in detection_layers))):
         param = sp[k]
         v.copy_(param)
     except:

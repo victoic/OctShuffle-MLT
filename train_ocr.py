@@ -95,7 +95,7 @@ def main(opts):
     optimizer.step()
     if not np.isinf(loss.data.cpu().numpy()):
       print(loss.data.cpu().numpy())
-      train_loss += loss.data.cpu().numpy()[0] #net.bbox_loss.data.cpu().numpy()[0]
+      train_loss += if isinstance(loss.data.cpu().numpy(), list) loss.data.cpu().numpy()[0] else loss.data.cpu().numpy() #net.bbox_loss.data.cpu().numpy()[0]
       cnt += 1
     
     if opts.debug:

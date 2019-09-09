@@ -183,6 +183,8 @@ def generator(batch_size=4, train_list='/home/klara/klara/home/DeepSemanticText/
           else:
             print('Unknown char: {0}'.format(gt_txt[k]) )
             gt_labels.append( 3 )
+            with open("codec.txt", "a") as codec:
+                codec.write(gt_txt[k])
             
         if 'ARABIC' in ud.name(gt_txt[0]):
           gt_labels = gt_labels[::-1]

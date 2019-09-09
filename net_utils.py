@@ -31,8 +31,6 @@ def load_net(fname, net, optimizer=None, load_shared=True, load_ocr=True, load_d
     learning_rate = 0.001
   opt_state = sp['optimizer']
   sp = sp['state_dict']
-  pretrained_dict = net.state_dict()
-  pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
 
   for k, v in net.state_dict().items():
     try:

@@ -51,7 +51,7 @@ def main(opts):
   step_start = 0  
   if os.path.exists(opts.model):
     print('loading model from %s' % args.model)
-    step_start, learning_rate = net_utils.load_net(args.model, net, optimizer)
+    step_start, learning_rate = net_utils.load_net(args.model, net, optimizer, load_ocr=False)
   else:
     learning_rate = base_lr
   
@@ -94,7 +94,6 @@ def main(opts):
     loss.backward()
     optimizer.step()
     if not np.isinf(loss.data.cpu().numpy()):
-      print(loss.data.cpu().numpy())
       train_loss += loss.data.cpu().numpy()[0] if isinstance(loss.data.cpu().numpy(), list) else loss.data.cpu().numpy() #net.bbox_loss.data.cpu().numpy()[0]
       cnt += 1
     

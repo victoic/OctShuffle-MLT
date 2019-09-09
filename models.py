@@ -10,7 +10,7 @@ import torch.nn.functional as F
 import numpy as np
 
 from collections import OrderedDict
-from octconv import OctConv2d, GatedConv
+from octconv.octconv import OctConv2d, GatedConv
 from torch.nn import LeakyReLU, Conv2d, Dropout2d, LogSoftmax, InstanceNorm2d
 
 import math

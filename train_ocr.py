@@ -56,7 +56,7 @@ def main(opts):
                                 load_detection=opts.load_detection, 
                                 load_shared=opts.load_shared,
                                 load_optimizer=opts.load_optimizer,
-                                load_reset_step=opts.load_reset_step)
+                                reset_step=opts.load_reset_step)
   else:
     learning_rate = base_lr
   

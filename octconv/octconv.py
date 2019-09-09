@@ -1,5 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.mm as mm
 
 class GatedConv(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, bias=False, dilation=1, groups=1, activation=nn.Sigmoid()):
@@ -13,7 +14,7 @@ class GatedConv(nn.Module):
         x_1 = self.activation_1(x[:,:,:self.half_channels])
         x_2 = x[:,:,self.half_channels:]
 
-        return torch.mm(x_1,x_2)
+        return mm(x_1,x_2)
 
 class OctConv2d(nn.Module):
 

@@ -79,7 +79,7 @@ class OctConv2d(nn.Module):
 
         self.pool = nn.AvgPool2d(kernel_size=(2, 2), stride=2)
 
-        conv_type = GatedConv if gated else nn.Conv
+        conv_type = GatedConv if gated else nn.Conv2d
 
         self.conv_h2h = conv_type(in_channels=self.in_channels['high'],
                                   out_channels=self.out_channels['high'],

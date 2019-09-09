@@ -6,7 +6,8 @@ class GatedConv(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, bias=False, dilation=1, groups=1, activation=nn.Sigmoid()):
         super(GatedConv, self).__init__()
         self.half_channels = out_channels
-        self.conv = nn.Conv2d(in_channels, out_channels*2, kernel_size, stride=stride, padding=padding, bias=bias, dilation=dilation, groups=groups)
+        self.conv = nn.Conv2d(in_channels, out_channels*2, kernel_size, stride=stride, 
+                                padding=padding, bias=bias, dilation=dilation, groups=groups)
         self.activation_1 = activation
 
     def forward(self, x):

@@ -13,7 +13,7 @@ def np_to_variable(x, is_cuda=True, dtype=torch.FloatTensor):
       v = v.cuda()
   return v
 
-def load_net(fname, net, optimizer=None, load_shared=True, load_ocr=True, load_detection=True):
+def load_net(fname, net, optimizer=None, load_shared=True, load_ocr=True, load_detection=True, load_optimizer=True, reset_step=False):
 
   shared_layers = ['layer0', 'layer0_1']
   ocr_layers = ['conv5', 'conv6', 'conv7', 'conv8', 'conv9_1', 'conv9_2', 'conv10_s', 'conv11', 'batch5', 
@@ -22,7 +22,7 @@ def load_net(fname, net, optimizer=None, load_shared=True, load_ocr=True, load_d
                         'upconv1', 'upconv2', 'act', 'rbox', 'angle', 'conv_attenton']
 
   sp = torch.load(fname) 
-  step = sp['step']
+  step = sp['step'] if not reset_step else 0
   try:
     learning_rate = sp['learning_rate']
   except:
@@ -43,7 +43,7 @@ def load_net(fname, net, optimizer=None, load_shared=True, load_ocr=True, load_d
       import traceback
       traceback.print_exc()
   
-  if optimizer is not None:  
+  if optimizer is not None and load_optimizer:  
     try:
       optimizer.load_state_dict(opt_state)
     except:

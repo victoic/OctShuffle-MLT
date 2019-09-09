@@ -51,7 +51,12 @@ def main(opts):
   step_start = 0  
   if os.path.exists(opts.model):
     print('loading model from %s' % args.model)
-    step_start, learning_rate = net_utils.load_net(args.model, net, optimizer, load_ocr=False)
+    step_start, learning_rate = net_utils.load_net(args.model, net, optimizer,
+                                load_ocr=opts.load_ocr, 
+                                load_detection=opts.load_detection, 
+                                load_shared=opts.load_shared,
+                                load_optimizer=opts.load_optimizer,
+                                load_reset_step=opts.load_reset_step)
   else:
     learning_rate = base_lr
   
@@ -141,6 +146,11 @@ if __name__ == '__main__':
   parser.add_argument('-num_readers', type=int, default=1)
   parser.add_argument('-cuda', type=bool, default=True)
   parser.add_argument('-norm_height', type=int, default=40)
+  parser.add_argument('-load_reset_step', type=int, default=0)
+  parser.add_argument('-load_optimizer', type=int, default=0)
+  parser.add_argument('-load_ocr', type=int, default=0)
+  parser.add_argument('-load_detection', type=int, default=1)
+  parser.add_argument('-load_shared', type=int, default=1)
   
   args = parser.parse_args()  
   main(args)

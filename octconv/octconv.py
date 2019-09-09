@@ -14,7 +14,9 @@ class GatedConv(nn.Module):
         print(self.half_channels)
         x = self.conv(x)
         x_1 = self.activation_1(x[:,:self.half_channels,:,:])
+        print(x_1.shape)
         x_2 = x[:,self.half_channels:,:,:]
+        print(x_2.shape)
 
         return mul(x_1,x_2)
 

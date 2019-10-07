@@ -398,6 +398,13 @@ def main(opts):
   model_name = 'OCT-E2E-MLT'
   net = OctMLT(attention=True)
   print("Using {0}".format(model_name))
+
+  if (opts.deterministic):
+    torch.manual_seed(opts.seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    np.random.seed(opts.seed)
+    random.seed(opts.seed)
   
   learning_rate = opts.base_lr
   optimizer = torch.optim.Adam(net.parameters(), lr=opts.base_lr, weight_decay=weight_decay)
@@ -614,6 +621,8 @@ if __name__ == '__main__':
   parser.add_argument('-geo_type', type=int, default=0)
   parser.add_argument('-base_lr', type=float, default=0.0001)
   parser.add_argument('-max_iters', type=int, default=300000)
+  parser.add_argument('-deterministic', type=int, default=0)
+  parser.add_argument('-seed', type=int, default=9001)
   
   args = parser.parse_args()  
   main(args)

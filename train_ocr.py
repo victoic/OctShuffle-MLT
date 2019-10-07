@@ -24,7 +24,7 @@ from torch_baidu_ctc import ctc_loss, CTCLoss
 from torch.autograd import Variable
 
 from models import OctMLT
-from ocr_test_utils import print_seq_ext
+from ocr_test_utils import print_seq_ext, test
 import random
 
 import cv2
@@ -46,6 +46,13 @@ def main(opts):
   
   if opts.cuda:
     net.cuda()
+
+  if (opts.deterministic):
+    torch.manual_seed(opts.seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    np.random.seed(opts.seed)
+    random.seed(opts.seed)
     
   optimizer = torch.optim.Adam(net.parameters(), lr=base_lr, weight_decay=weight_decay)
   step_start = 0
@@ -138,6 +145,7 @@ def main(opts):
       torch.save(state, save_name)
       print('save model: {}'.format(save_name))
       
+      acc_val, ted = test(net, codec, opts, list_file=opts.valid_list, norm_height=opts.norm_height)
       #acc_test, ted = test(net, codec, opts,  list_file=opts.valid_list, norm_height=opts.norm_height)
       #acc.append([0, acc_test, ted])
       np.savez('train_acc_{0}'.format(model_name), acc=acc)
@@ -162,6 +170,8 @@ if __name__ == '__main__':
   parser.add_argument('-freeze_shared', type=int, default=1)
   parser.add_argument('-freeze_detection', type=int, default=1)
   parser.add_argument('-freeze_ocr', type=int, default=0)
+  parser.add_argument('-deterministic', type=int, default=0)
+  parser.add_argument('-seed', type=int, default=9001)
   
   args = parser.parse_args()  
   main(args)

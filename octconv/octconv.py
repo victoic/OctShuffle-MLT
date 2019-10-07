@@ -46,7 +46,12 @@ class OctConv2d(nn.Module):
             assert 0 <= alpha <= 1, "Alpha must be in interval [0, 1]"
             self.alpha_in = alpha
             self.alpha_out = alpha
-
+        
+        if gated:
+          conv_type = GatedConv 
+        else:
+          conv_type = nn.Conv2d
+        
         # in_channels
         in_ch_hf = int((1 - self.alpha_in) * in_channels)
         self.in_channels = {
@@ -80,8 +85,6 @@ class OctConv2d(nn.Module):
         self.bias = bias
 
         self.pool = nn.AvgPool2d(kernel_size=(2, 2), stride=2)
-
-        conv_type = GatedConv if gated else nn.Conv2d
 
         self.conv_h2h = conv_type(in_channels=self.in_channels['high'],
                                   out_channels=self.out_channels['high'],

@@ -122,7 +122,7 @@ class CReLU_IN(nn.Module):
 
 def conv_bn(inp, oup, stride, alpha=0.5):
     return nn.Sequential(
-      OctConv2d(inp, oup, 3, stride, 1, bias=False, alpha=alpha),
+      OctConv2d(inp, oup, 3, stride, 1, bias=False, alpha=alpha, gated=False),
       _BatchNorm2d(oup),
       _ReLU(inplace=True)
     )
@@ -511,17 +511,17 @@ class OctMLT(nn.Module):
     alpha = 0.5
     
     self.layer0 = nn.Sequential(
-      OctConv2d(3, 16, 3, stride=1, padding=1, bias=False, alpha=(0, 0.5)),
+      OctConv2d(3, 16, 3, stride=1, padding=1, bias=False, alpha=(0, 0.5), gated=False),
       CReLU_IN(16),
-      OctConv2d(32, 32, 3, stride=2, padding=1, bias=False),
+      OctConv2d(32, 32, 3, stride=2, padding=1, bias=False, gated=False),
       CReLU_IN(32)
     )
     
     self.layer0_1 = nn.Sequential(
-      OctConv2d(64, 64, 3, stride=1, padding=1, bias=False),
+      OctConv2d(64, 64, 3, stride=1, padding=1, bias=False, gated=False),
       #nn.InstanceNorm2d(64, affine=True),
       _ReLU(),
-      OctConv2d(64, 64, 3, stride=2, padding=1, bias=False),
+      OctConv2d(64, 64, 3, stride=2, padding=1, bias=False, gated=False),
       #nn.InstanceNorm2d(64, affine=True),
       _ReLU(inplace=True)
     )
@@ -554,19 +554,19 @@ class OctMLT(nn.Module):
     self.layer3 = self._make_stage(3)
     self.layer4 = self._make_stage(4)
 
-    self.feature4 = OctConv2d(960, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
-    self.feature3 = OctConv2d(480, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
-    self.feature2 = OctConv2d(240, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
+    self.feature4 = OctConv2d(960, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0), gated=False)
+    self.feature3 = OctConv2d(480, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0), gated=False)
+    self.feature2 = OctConv2d(240, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0), gated=False)
     
     self.upconv2 = conv_dw_plain(256, 256, stride=1, alpha=0)
     self.upconv1 = conv_dw_plain(256, 256, stride=1, alpha=0)
     
-    self.feature1 = OctConv2d(24, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0))
+    self.feature1 = OctConv2d(24, 256, 1, stride=1, padding=0, bias=False, alpha=(0.5, 0), gated=False)
     
-    self.act = OctConv2d(256, 1, 1, padding=0, stride=1, alpha=0)
-    self.rbox = OctConv2d(256, 4, 1, padding=0, stride=1, alpha=0)
+    self.act = OctConv2d(256, 1, 1, padding=0, stride=1, alpha=0, gated=False)
+    self.rbox = OctConv2d(256, 4, 1, padding=0, stride=1, alpha=0, gated=False)
     
-    self.angle = OctConv2d(256, 2, 1, padding=0, stride=1, alpha=0)
+    self.angle = OctConv2d(256, 2, 1, padding=0, stride=1, alpha=0, gated=False)
     self.drop0 = _Dropout2d(p=0.2, inplace=False)
     self.drop1 = Dropout2d(p=0.2, inplace=False)
     
@@ -588,7 +588,7 @@ class OctMLT(nn.Module):
       downsample = nn.Sequential(
   
         OctConv2d(self.inplanes, planes * block.expansion,
-                  kernel_size=1, stride=stride, bias=False, alpha=alpha),
+                  kernel_size=1, stride=stride, bias=False, alpha=alpha, gated=False),
         _BatchNorm2d(planes * block.expansion, alpha_in=alpha, alpha_out=alpha),
       )
 

@@ -217,7 +217,7 @@ def test(net, codec, args,  list_file = '/home/busta/data/icdar_ch8_validation/o
         correct_ed1_script[script] += 1  
       image_prev = "<img src=\"{0}\" height=\"32\" />".format(img_nameo)
       bad_words.append((gt_txt, det_text, edit_dist, image_prev, img_nameo))
-      print('{0} - {1} / {2:.2f} - {3:.2f}'.format(det_text, gt_txt, correct / float(it), ted / 3.0 )) 
+      #print('{0} - {1} / {2:.2f} - {3:.2f}'.format(det_text, gt_txt, correct / float(it), ted / 3.0 )) 
     
     count_script[script] += 1
     fout.write('{0}|{1}|{2}|{3}\n'.format(os.path.basename(image_name), gt_txt, det_text, edit_dist))  

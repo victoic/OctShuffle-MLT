@@ -153,8 +153,8 @@ def main(opts):
 if __name__ == '__main__': 
   parser = argparse.ArgumentParser()
   
-  parser.add_argument('-train_list', default='/home/busta/data/90kDICT32px/train_mlt.txt')
-  parser.add_argument('-valid_list', default='/home/busta/data/icdar_ch8_validation/ocr_valid.txt')
+  parser.add_argument('-train_list', default='/dataset/crops/crops_list.txt')
+  parser.add_argument('-valid_list', default='/dataset/VALIDATION/ICDAR2017MLT/crops_list.txt')
   parser.add_argument('-save_path', default='backup2')
   parser.add_argument('-model', default='')
   parser.add_argument('-debug', type=int, default=0)

@@ -10,7 +10,7 @@ def test_stages(opts):
   net = OctMLT(attention=True)
   if opts.cuda:
     net.cuda()
-  optimizer = torch.optim.Adam(net.parameters(), lr=base_lr, weight_decay=weight_decay)
+  optimizer = torch.optim.Adam(net.parameters(), lr=0.0001, weight_decay=0.0005)
 
   save_file = date.today().strftime("%b-%d-%Y")+".csv"
   save_path = os.path.join(opts.results_dir, save_file)

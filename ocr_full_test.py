@@ -17,6 +17,8 @@ def test_stages(opts):
   result_file = open(save_path, "w+")
   result_file.write("model,acc_val,ted\n")
 
+  valid_list = os.path.abspath(opts.valid_list)
+
   os.chdir(opts.dir)
   for stage in glob.glob("*.h5"):
     name = stage.split('.')[0]
@@ -32,7 +34,7 @@ def test_stages(opts):
     net_utils.freeze_ocr(net)
     net_utils.freeze_detection(net)
     print('starting test..')
-    acc_val, ted = test(net, opts.codec, opts, list_file=opts.valid_list, norm_height=opts.norm_height)
+    acc_val, ted = test(net, opts.codec, opts, list_file=valid_list, norm_height=opts.norm_height)
     print('saving results..')
     result_file.write(f"{name},{acc_val},{ted}\n")
   text_file.close()

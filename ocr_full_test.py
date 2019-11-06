@@ -2,6 +2,8 @@ import glob, os
 from models import OctMLT
 from ocr_test_utils import print_seq_ext, test
 from datetime import date
+import net_utils
+import argparse
 
 def test_stages(opts):
   net = OctMLT(attention=True)

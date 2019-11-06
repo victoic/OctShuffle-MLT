@@ -41,12 +41,12 @@ def test_stages(opts):
 if __name__ == '__main__': 
   parser = argparse.ArgumentParser()
   
-  parser.add_argument('-dir', default='/backup2')
+  parser.add_argument('-dir', default='backup2')
   parser.add_argument('-codec', default='codec.txt')
-  parser.add_argument('-valid_list', default='/dataset/VALIDATION/ICDAR2017MLT/crops_list.txt')
+  parser.add_argument('-valid_list', default='dataset/VALIDATION/ICDAR2017MLT/crops_list.txt')
   parser.add_argument('-cuda', type=bool, default=True)
   parser.add_argument('-norm_height', type=int, default=40)
-  parser.add_argument('-results_dir', default='/test_results')
+  parser.add_argument('-results_dir', default='test_results')
   
   args = parser.parse_args()
   test_stages(args)

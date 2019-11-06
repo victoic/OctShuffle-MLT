@@ -21,7 +21,7 @@ def test_stages(opts):
   for stage in glob.glob("*.h5"):
     name = stage.split('.')[0]
     if os.path.exists(stage):
-      print('loading model from %s' % args.model)
+      print(f"loading model from {stage}")
       step_start, learning_rate = net_utils.load_net(stage, net, optimizer,
                                   load_ocr=1, 
                                   load_detection=0, 
@@ -34,7 +34,7 @@ def test_stages(opts):
     print('starting test..')
     acc_val, ted = test(net, opts.codec, opts, list_file=opts.valid_list, norm_height=opts.norm_height)
     print('saving results..')
-    result_file.write("{name},{acc_val},{ted}\n")
+    result_file.write(f"{name},{acc_val},{ted}\n")
   text_file.close()
   print('end')
 

@@ -14,7 +14,7 @@ def test_stages(opts):
 
   save_file = date.today().strftime("%b-%d-%Y")+".csv"
   save_path = os.path.join(opts.results_dir, save_file)
-  result_file = open(save_path, "w")
+  result_file = open(save_path, "w+")
   result_file.write("model,acc_val,ted\n")
 
   os.chdir(opts.dir)

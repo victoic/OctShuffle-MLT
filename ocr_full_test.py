@@ -3,7 +3,7 @@ from models import OctMLT
 from ocr_test_utils import print_seq_ext, test
 from datetime import date
 
-def test_stages(opts)
+def test_stages(opts):
   net = OctMLT(attention=True)
   if opts.cuda:
     net.cuda()

@@ -539,8 +539,10 @@ class OctMLT(nn.Module):
     
     self.batch5 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
     self.batch6 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
-    self.batch7 = _InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=True)
-    self.batch8 = _InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=True)
+    self.batch7 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
+    self.batch8 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
+    self.batch8_1 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
+    self.batch8_2 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
     self.batch9 = _InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=True)
     self.batch10_s = InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=True)
     self.max2_1 = nn.MaxPool2d((2, 1), stride=(2,1))
@@ -656,7 +658,12 @@ class OctMLT(nn.Module):
     x = self.leaky(x)
     x = self.conv8(x)
     x = self.leaky(x)
+
     x = self.conv8_1(x)
+    x = self.batch8_1(x)
+    x = self.leaky(x)
+
+    x = self.conv8_2(x)
     x = self.leaky(x)
     x = self.conv8_2(x)
     x = self.leaky(x)

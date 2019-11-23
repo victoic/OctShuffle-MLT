@@ -23,7 +23,7 @@ for i in range(1, 100):
   buckets.append(8  + 8 * i)
 
 
-def test(net, codec, args,  list_file = '/home/busta/data/icdar_ch8_validation/ocr_valid.txt', norm_height=32, max_samples=1000000):
+def test(net, codec, args,  list_file = '/home/busta/data/icdar_ch8_validation/ocr_valid.txt', norm_height=32, max_samples=1000000, print_txt=False):
   
   
   codec_rev = {}
@@ -205,7 +205,8 @@ def test(net, codec, args,  list_file = '/home/busta/data/icdar_ch8_validation/o
     images_count += 1
     
     fout_ocr.write('{0}, "{1}"\n'.format(os.path.basename(image_name), det_text.strip()))
-    print(det_text, "\t\t\t", gt_txt)
+    if print_txt:
+      print(det_text, "\t\t\t", gt_txt)
     if det_text.lower() == gt_txt.lower():
       correct += 1
       correct_ed1 += 1

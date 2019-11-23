@@ -205,7 +205,7 @@ def test(net, codec, args,  list_file = '/home/busta/data/icdar_ch8_validation/o
     images_count += 1
     
     fout_ocr.write('{0}, "{1}"\n'.format(os.path.basename(image_name), det_text.strip()))
-    
+    print(det_text, "\t\t\t", gt_txt)
     if det_text.lower() == gt_txt.lower():
       correct += 1
       correct_ed1 += 1

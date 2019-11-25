@@ -567,23 +567,19 @@ class OctMLT(nn.Module):
     self.conv6 = OctConv2d(128, 128, 3, padding=1, bias=False, gated=False)
     self.conv7 = OctConv2d(128, 128, 3, padding=1, bias=False, gated=False)
     self.conv8 = OctConv2d(128, 128, 3, padding=1, bias=False, gated=False)
-    self.conv8_1 = OctConv2d(128, 128, 3, padding=1, bias=False, gated=False)
-    self.conv8_2 = OctConv2d(128, 128, 3, padding=1, bias=False, gated=False)
-    self.conv9_1 = OctConv2d(128, 256, 3, padding=1, bias=False, gated=False)
-    self.conv9_2 = OctConv2d(256, 256, 3, padding=1, bias=False, gated=False)
-    self.conv9_2 = OctConv2d(256, 256, 3, padding=1, bias=False, gated=False)
-    self.conv9_2 = OctConv2d(256, 256, 3, padding=1, bias=False, alpha=(0.5, 0), gated=False)
-    self.conv10_s = GatedConv(256, 256, (2, 3), padding=(0, 1), bias=False) 
-    self.conv11 = Conv2d(256, 8400, 1, padding=(0,0))
+    self.conv9 = OctConv2d(128, 128, 3, padding=1, bias=False, gated=False)
+    self.conv10 = OctConv2d(128, 128, 3, padding=1, bias=False, gated=False)
     
-    self.batch5 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
-    self.batch6 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
-    self.batch7 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
-    self.batch8 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
-    self.batch8_1 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
-    self.batch8_2 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
-    self.batch9 = _InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=True)
-    self.batch10_s = InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=True)
+    self.conv11 = OctConv2d(128, 256, 3, padding=1, bias=False, gated=False)
+    self.conv12 = OctConv2d(256, 256, 3, padding=1, bias=False, gated=False)
+    self.conv13 = OctConv2d(256, 256, 3, padding=1, bias=False, gated=False)
+    self.conv14 = OctConv2d(256, 256, 3, padding=1, bias=False, alpha=(0.5, 0), gated=False)
+    self.conv15_s = GatedConv(256, 256, (2, 3), padding=(0, 1), bias=False) 
+    self.conv16 = Conv2d(256, 8400, 1, padding=(0,0))
+    
+    self.batch128 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
+    self.batch256 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
+    self.batch256_2 = InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=True)
     self.max2_1 = nn.MaxPool2d((2, 1), stride=(2,1))
     self.max2 = _MaxPool2d((2, 1), stride=(2,1))
     self.leaky = _LeakyReLU(negative_slope=0.01, inplace=True)
@@ -644,7 +640,7 @@ class OctMLT(nn.Module):
   def forward_ocr(self, x):
     
     x = self.conv5(x)
-    x = self.batch5(x)
+    x = self.batch128(x)
     x = self.leaky(x)
     
     x = self.conv6(x)
@@ -654,38 +650,51 @@ class OctMLT(nn.Module):
     
     x = self.max2(x)
     x = self.conv7(x)
-    x = self.batch7(x)
+    x = self.batch128(x)
     x = self.leaky(x)
-    
     
     x = self.conv8(x)
     x = self.leaky(x)
     x = self.conv8(x)
     x = self.leaky(x)
 
-    x = self.conv8_1(x)
-    x = self.batch8_1(x)
+    x = self.conv9(x)
+    x = self.batch256(x)
     x = self.leaky(x)
 
-    x = self.conv8_2(x)
+    x = self.conv10(x)
     x = self.leaky(x)
-    x = self.conv8_2(x)
+    x = self.conv10(x)
     x = self.leaky(x)
-    
-    x = self.conv9_1(x)
+  
+    x = self.conv11(x)
+    x = self.batch256(x)
     x = self.leaky(x)
-    x = self.conv9_2(x)
+
+    x = self.conv12(x)
+    x = self.leaky(x)
+    x = self.conv12(x)
     x = self.leaky2(x)
+
+    x = self.conv13(x)
+    x = self.batch256(x)
+    x = self.leaky(x)
+
+    x = self.conv14(x)
+    x = self.leaky(x)
+    x = self.conv14(x)
+    x = self.leaky2(x)
+
     
     x = self.max2_1(x)
     
-    x = self.conv10_s(x)
-    x = self.batch10_s(x)
+    x = self.conv15_s(x)
+    x = self.batch256_2(x)
     x = self.leaky2(x)
     
     
     x = self.drop1(x)
-    x = self.conv11(x)
+    x = self.conv16(x)
     x = x.squeeze(2)
 
     x = x.permute(0,2,1)

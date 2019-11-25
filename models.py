@@ -659,7 +659,7 @@ class OctMLT(nn.Module):
     x = self.leaky(x)
 
     x = self.conv9(x)
-    x = self.batch256(x)
+    x = self.batch128(x)
     x = self.leaky(x)
 
     x = self.conv10(x)

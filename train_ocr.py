@@ -150,7 +150,7 @@ def main(opts):
       #acc_test, ted = test(net, codec, opts,  list_file=opts.valid_list, norm_height=opts.norm_height)
       #acc.append([0, acc_test, ted])
       file = open("recordings.csv", "w+")
-      file.writeline(f"{step},{train_loss},{acc_val}")
+      file.write(f"{step},{train_loss},{acc_val}\n")
       file.close()
 
       np.savez('train_acc_{0}'.format(model_name), acc=acc)

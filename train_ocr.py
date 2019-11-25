@@ -180,5 +180,3 @@ if __name__ == '__main__':
   
   args = parser.parse_args()  
   main(args)
-  
-  python train_ocr.py -model=backup/OctShuffleMLT_150000.h5 -load_reset_step=1 -deterministic=1

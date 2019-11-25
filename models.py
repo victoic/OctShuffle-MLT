@@ -509,7 +509,8 @@ class OctMLT(nn.Module):
     
     self.inplanes = 64
     alpha = 0.5
-    
+
+    #Detection
     self.layer0 = nn.Sequential(
       OctConv2d(3, 16, 3, stride=1, padding=1, bias=False, alpha=(0, 0.5), gated=False),
       CReLU_IN(16),
@@ -525,30 +526,6 @@ class OctMLT(nn.Module):
       #nn.InstanceNorm2d(64, affine=True),
       _ReLU(inplace=True)
     )
-    
-    self.conv5 = OctConv2d(64, 128, 3, padding=1, bias=False, gated=False)
-    self.conv6 = OctConv2d(128, 128, 3, padding=1, bias=False, gated=False)
-    self.conv7 = OctConv2d(128, 128, 3, padding=1, bias=False, gated=False)
-    self.conv8 = OctConv2d(128, 128, 3, padding=1, bias=False, gated=False)
-    self.conv8_1 = OctConv2d(128, 128, 3, padding=1, bias=False, gated=False)
-    self.conv8_2 = OctConv2d(128, 128, 3, padding=1, bias=False, gated=False)
-    self.conv9_1 = OctConv2d(128, 256, 3, padding=1, bias=False, gated=False)
-    self.conv9_2 = OctConv2d(256, 256, 3, padding=1, bias=False, alpha=(0.5, 0), gated=False)
-    self.conv10_s = GatedConv(256, 256, (2, 3), padding=(0, 1), bias=False)
-    self.conv11 = Conv2d(256, 8400, 1, padding=(0,0))
-    
-    self.batch5 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
-    self.batch6 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
-    self.batch7 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
-    self.batch8 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
-    self.batch8_1 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
-    self.batch8_2 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
-    self.batch9 = _InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=True)
-    self.batch10_s = InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=True)
-    self.max2_1 = nn.MaxPool2d((2, 1), stride=(2,1))
-    self.max2 = _MaxPool2d((2, 1), stride=(2,1))
-    self.leaky = _LeakyReLU(negative_slope=0.01, inplace=True)
-    self.leaky2 = LeakyReLU(negative_slope=0.01, inplace=True)
 
     self.groups = 3
     self.stage_out_channels = [-1, 24, 240, 480, 960]
@@ -584,6 +561,33 @@ class OctMLT(nn.Module):
       self.conv_attenton = OctConv2d(256, 1, kernel_size=1, stride=1, padding=0, bias=True, alpha=0) 
     
     self.multi_scale = multi_scale
+    
+    # OCR
+    self.conv5 = OctConv2d(64, 128, 3, padding=1, bias=False, gated=False)
+    self.conv6 = OctConv2d(128, 128, 3, padding=1, bias=False, gated=False)
+    self.conv7 = OctConv2d(128, 128, 3, padding=1, bias=False, gated=False)
+    self.conv8 = OctConv2d(128, 128, 3, padding=1, bias=False, gated=False)
+    self.conv8_1 = OctConv2d(128, 128, 3, padding=1, bias=False, gated=False)
+    self.conv8_2 = OctConv2d(128, 128, 3, padding=1, bias=False, gated=False)
+    self.conv9_1 = OctConv2d(128, 256, 3, padding=1, bias=False, gated=False)
+    self.conv9_2 = OctConv2d(256, 256, 3, padding=1, bias=False, gated=False)
+    self.conv9_2 = OctConv2d(256, 256, 3, padding=1, bias=False, gated=False)
+    self.conv9_2 = OctConv2d(256, 256, 3, padding=1, bias=False, alpha=(0.5, 0), gated=False)
+    self.conv10_s = GatedConv(256, 256, (2, 3), padding=(0, 1), bias=False) 
+    self.conv11 = Conv2d(256, 8400, 1, padding=(0,0))
+    
+    self.batch5 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
+    self.batch6 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
+    self.batch7 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
+    self.batch8 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
+    self.batch8_1 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
+    self.batch8_2 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
+    self.batch9 = _InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=True)
+    self.batch10_s = InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=True)
+    self.max2_1 = nn.MaxPool2d((2, 1), stride=(2,1))
+    self.max2 = _MaxPool2d((2, 1), stride=(2,1))
+    self.leaky = _LeakyReLU(negative_slope=0.01, inplace=True)
+    self.leaky2 = LeakyReLU(negative_slope=0.01, inplace=True)
 
   def _make_layer(self, block, planes, blocks, stride=1, alpha=0.5):
     

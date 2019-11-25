@@ -136,6 +136,7 @@ def main(opts):
       train_loss = 0
       cnt = 0
 
+
     if step > step_start and (step % batch_per_epoch == 0):
       save_name = os.path.join(opts.save_path, '{}_{}.h5'.format(model_name, step))
       state = {'step': step,
@@ -148,6 +149,10 @@ def main(opts):
       acc_val, ted = test(net, codec, opts, list_file=opts.valid_list, norm_height=opts.norm_height)
       #acc_test, ted = test(net, codec, opts,  list_file=opts.valid_list, norm_height=opts.norm_height)
       #acc.append([0, acc_test, ted])
+      file = open("recordings.csv", "w+")
+      file.writeline(f"{step},{train_loss},{acc_val}")
+      file.close()
+
       np.savez('train_acc_{0}'.format(model_name), acc=acc)
 
 if __name__ == '__main__': 
@@ -176,3 +181,4 @@ if __name__ == '__main__':
   args = parser.parse_args()  
   main(args)
   
+  python train_ocr.py -model=backup/OctShuffleMLT_150000.h5 -load_reset_step=1 -deterministic=1

@@ -97,7 +97,8 @@ def main(opts):
     im_data = net_utils.np_to_variable(images, is_cuda=opts.cuda).permute(0, 3, 1, 2)
     features = net.forward_features(im_data)
     labels_pred = net.forward_ocr(features)
-    
+    loss_recording = 0
+
     # backward
     '''
     acts: Tensor of (seqLength x batch x outputDim) containing output from network
@@ -133,6 +134,7 @@ def main(opts):
       print('epoch %d[%d], loss: %.3f, lr: %.5f ' % (
           step / batch_per_epoch, step, train_loss, learning_rate))
 
+      loss_recording = train_loss
       train_loss = 0
       cnt = 0
 
@@ -149,8 +151,8 @@ def main(opts):
       acc_val, ted = test(net, codec, opts, list_file=opts.valid_list, norm_height=opts.norm_height)
       #acc_test, ted = test(net, codec, opts,  list_file=opts.valid_list, norm_height=opts.norm_height)
       #acc.append([0, acc_test, ted])
-      file = open("recordings.csv", "w+")
-      file.write(f"{step},{train_loss},{acc_val}\n")
+      file = open("recordings.csv", "a+")
+      file.write(f"{step},{loss_recording},{acc_val}\n")
       file.close()
 
       np.savez('train_acc_{0}'.format(model_name), acc=acc)

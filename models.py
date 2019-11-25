@@ -578,7 +578,7 @@ class OctMLT(nn.Module):
     self.conv16 = Conv2d(256, 8400, 1, padding=(0,0))
     
     self.batch128 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
-    self.batch256 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
+    self.batch256 = _InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=True)
     self.batch256_2 = InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=True)
     self.max2_1 = nn.MaxPool2d((2, 1), stride=(2,1))
     self.max2 = _MaxPool2d((2, 1), stride=(2,1))

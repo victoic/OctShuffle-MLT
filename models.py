@@ -573,14 +573,17 @@ class OctMLT(nn.Module):
     self.conv11 = OctConv2d(128, 256, 3, padding=1, bias=False, gated=False)
     self.conv12 = OctConv2d(256, 256, 3, padding=1, bias=False, gated=False)
     self.conv13 = OctConv2d(256, 256, 3, padding=1, bias=False, gated=False)
-    self.conv14_1 = OctConv2d(256, 256, 3, padding=1, bias=False, gated=False)
-    self.conv14_2 = OctConv2d(256, 256, 3, padding=1, bias=False, alpha=(0.5, 0), gated=False)
-    self.conv15_s = GatedConv(256, 256, (2, 3), padding=(0, 1), bias=False) 
-    self.conv16 = Conv2d(256, 8400, 1, padding=(0,0))
+    self.conv14 = OctConv2d(256, 512, 3, padding=1, bias=False, gated=False)
+    self.conv15 = OctConv2d(512, 512, 3, padding=1, bias=False, gated=False)
+    self.conv16_1 = OctConv2d(512, 512, 3, padding=1, bias=False, gated=False)
+    self.conv16_2 = OctConv2d(512, 512, 3, padding=1, bias=False, alpha=(0.5, 0), gated=False)
+    self.conv17_s = GatedConv(512, 512, (2, 3), padding=(0, 1), bias=False) 
+    self.conv18 = Conv2d(512, 8400, 1, padding=(0,0))
     
     self.batch128 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
     self.batch256 = _InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=True)
-    self.batch256_2 = InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=True)
+    self.batch512 = _InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=True)
+    self.batch512_2 = InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=True)
     self.max2_1 = nn.MaxPool2d((2, 1), stride=(2,1))
     self.max2 = _MaxPool2d((2, 1), stride=(2,1))
     self.leaky = _LeakyReLU(negative_slope=0.01, inplace=True)
@@ -681,21 +684,30 @@ class OctMLT(nn.Module):
     x = self.batch256(x)
     x = self.leaky(x)
 
-    x = self.conv14_1(x)
+    x = self.conv13(x)
     x = self.leaky(x)
-    x = self.conv14_2(x)
+    x = self.conv13(x)
+    x = self.leaky(x)
+
+    x = self.conv14(x)
+    x = self.batch512(x)
+    x = self.leaky(x)
+
+    x = self.conv16_1(x)
+    x = self.leaky(x)
+    x = self.conv16_2(x)
     x = self.leaky2(x)
 
     
     x = self.max2_1(x)
     
-    x = self.conv15_s(x)
-    x = self.batch256_2(x)
+    x = self.conv17_s(x)
+    x = self.batch512_2(x)
     x = self.leaky2(x)
     
     
     x = self.drop1(x)
-    x = self.conv16(x)
+    x = self.conv18(x)
     x = x.squeeze(2)
 
     x = x.permute(0,2,1)

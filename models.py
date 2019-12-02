@@ -573,8 +573,8 @@ class OctMLT(nn.Module):
     self.conv11 = OctConv2d(128, 256, 3, padding=1, bias=False, gated=False)
     self.conv12 = OctConv2d(256, 256, 3, padding=1, bias=False, gated=False)
     self.conv13 = OctConv2d(256, 256, 3, padding=1, bias=False, gated=False)
-    self.conv14 = OctConv2d(256, 512, 3, padding=1, bias=False, gated=False)
-    self.conv15 = OctConv2d(512, 512, 3, padding=1, bias=False, gated=False)
+    self.conv14 = OctConv2d(256, 256, 3, padding=1, bias=False, gated=False)
+    self.conv15 = OctConv2d(256, 512, 3, padding=1, bias=False, gated=False)
     self.conv16_1 = OctConv2d(512, 512, 3, padding=1, bias=False, gated=False)
     self.conv16_2 = OctConv2d(512, 512, 3, padding=1, bias=False, alpha=(0.5, 0), gated=False)
     self.conv17_s = GatedConv(512, 512, (2, 3), padding=(0, 1), bias=False) 
@@ -698,7 +698,6 @@ class OctMLT(nn.Module):
     x = self.conv16_2(x)
     x = self.leaky2(x)
 
-    
     x = self.max2_1(x)
     
     x = self.conv17_s(x)

@@ -646,7 +646,7 @@ class OctMLT(nn.Module):
     return nn.Sequential(modules)
   
   def forward_ocr(self, x):
-    
+    print(x.shape)
     x = self.conv5(x)
     x = self.batch128(x)
     x = self.leaky(x)

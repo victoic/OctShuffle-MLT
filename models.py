@@ -11,7 +11,7 @@ import numpy as np
 
 from collections import OrderedDict
 from octconv.octconv import OctConv2d, GatedConv
-from torch.nn import LeakyReLU, Conv2d, Dropout2d, LogSoftmax, InstanceNorm2d
+from torch.nn import LeakyReLU, Conv2d, Dropout2d, LogSoftmax, InstanceNorm2d, LSTM
 
 import math
 
@@ -504,7 +504,7 @@ class OctMLT(nn.Module):
     self.layer0_1[0].recompute_weights()
     self.layer0_1[2].recompute_weights()
             
-  def __init__(self, attention = False, multi_scale = True):
+  def __init__(self, num_classes=8400, nh=256, attention = False, multi_scale = True):
     super(OctMLT, self).__init__()
     
     self.inplanes = 64
@@ -578,7 +578,11 @@ class OctMLT(nn.Module):
     self.conv16_1 = OctConv2d(512, 512, 3, padding=1, bias=False, gated=False)
     self.conv16_2 = OctConv2d(512, 512, 3, padding=1, bias=False, alpha=(0.5, 0), gated=False)
     self.conv17_s = GatedConv(512, 512, (2, 3), padding=(0, 1), bias=False) 
-    self.conv18 = Conv2d(512, 8400, 1, padding=(0,0))
+    #self.conv18 = Conv2d(512, 8400, 1, padding=(0,0))
+    self.rnn = nn.Sequential(
+          LSTM(512, nh, nh),
+          LSTM(nh, nh, num_classes)
+      )
     
     self.batch128 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
     self.batch256 = _InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=True)
@@ -706,15 +710,18 @@ class OctMLT(nn.Module):
     
     
     x = self.drop1(x)
-    x = self.conv18(x)
-    x = x.squeeze(2)
+    print(x.shape)
+    assert x.size()[2] == 1
+    x = x.squeeze().permute(2, 0, 1)
+    x = self.rnn(x)
+    #x = x.squeeze(2)
 
-    x = x.permute(0,2,1)
-    y = x
-    x = x.contiguous().view(-1,x.data.shape[2])
-    x = LogSoftmax(len(x.size()) - 1)(x)
-    x = x.view_as(y)
-    x = x.permute(0,2,1)
+    #x = x.permute(0,2,1)
+    #y = x
+    #x = x.contiguous().view(-1,x.data.shape[2])
+    #x = LogSoftmax(len(x.size()) - 1)(x)
+    #x = x.view_as(y)
+    #x = x.permute(0,2,1)
     
     return x   
   

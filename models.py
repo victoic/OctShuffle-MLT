@@ -576,10 +576,7 @@ class OctMLT(nn.Module):
     self.conv14_2 = OctConv2d(512, 512, 3, padding=1, bias=False, alpha=(0.5, 0), gated=False)
     self.conv15_s = Conv2d(512, 512, (2, 3), padding=(0, 1), bias=False) 
     #self.conv18 = Conv2d(512, 8400, 1, padding=(0,0))
-    self.rnn = nn.Sequential(
-          LSTM(512, nh, nh, bidirectional=True),
-          LSTM(nh, nh, nh, bidirectional=True)
-      )
+    self.rnn = LSTM(512, nh, 2, bidirectional=True)
     self.linear = nn.Linear(nh*2, num_classes+1)
     self.softmax = nn.Softmax(dim=2)
     
@@ -699,9 +696,9 @@ class OctMLT(nn.Module):
     
     
     x = self.drop1(x)
-    print(x.shape)
     assert x.size()[2] == 1
     x = x.permute(3, 0, 2, 1).squeeze(2)
+    print(x.shape)
     seq, hidden = self.rnn(x)
     seq = self.linear(seq)
     #x = x.squeeze(2)

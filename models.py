@@ -581,7 +581,7 @@ class OctMLT(nn.Module):
           LSTM(nh, nh, nh, bidirectional=True)
       )
     self.linear = nn.Linear(nh*2, num_classes+1)
-    self.softmax = nn.softmax(dim=2)
+    self.softmax = nn.Softmax(dim=2)
     
     self.batch128 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
     self.batch256 = _InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=True)

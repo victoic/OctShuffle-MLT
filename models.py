@@ -577,9 +577,11 @@ class OctMLT(nn.Module):
     self.conv15_s = Conv2d(512, 512, (2, 3), padding=(0, 1), bias=False) 
     #self.conv18 = Conv2d(512, 8400, 1, padding=(0,0))
     self.rnn = nn.Sequential(
-          LSTM(512, nh, nh),
-          LSTM(nh, nh, num_classes)
+          LSTM(512, nh, nh, bidirectional=True),
+          LSTM(nh, nh, nh, bidirectional=True)
       )
+    self.linear = nn.Linear(nh*2, num_classes+1)
+    self.softmax = nn.softmax(dim=2)
     
     self.batch128 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
     self.batch256 = _InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=True)
@@ -699,8 +701,9 @@ class OctMLT(nn.Module):
     x = self.drop1(x)
     print(x.shape)
     assert x.size()[2] == 1
-    x = x.squeeze().permute(2, 0, 1)
-    x = self.rnn(x)
+    x = x.permute(3, 0, 2, 1).squeeze(2)
+    seq, hidden = self.rnn(x)
+    seq = self.linear(seq)
     #x = x.squeeze(2)
 
     #x = x.permute(0,2,1)
@@ -710,7 +713,7 @@ class OctMLT(nn.Module):
     #x = x.view_as(y)
     #x = x.permute(0,2,1)
     
-    return x   
+    return seq   
   
   def forward_features(self, x):
     

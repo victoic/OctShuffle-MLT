@@ -110,6 +110,7 @@ def main(opts):
     probs_sizes =  torch.IntTensor( [(labels_pred.permute(2,0,1).size()[0])] * (labels_pred.permute(2,0,1).size()[1]) )
     label_sizes = torch.IntTensor( torch.from_numpy(np.array(label_length)).int() )
     labels = torch.IntTensor( torch.from_numpy(np.array(labels)).int() )
+    print(f'GT Labels: {labels.shape}\nPred Labels: {labels_pred.shape}\n==================')
     loss = ctc_loss(labels_pred.permute(2,0,1), labels, probs_sizes, label_sizes) / im_data.size(0) # change 1.9.
     optimizer.zero_grad()
     loss.backward()

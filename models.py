@@ -702,7 +702,7 @@ class OctMLT(nn.Module):
     seq, hidden = self.rnn(x)
     seq = self.linear(seq)
     seq = self.softmax(seq)
-    seq = seq.argmax(dim=2)
+    #seq = seq.argmax(dim=2)
     #x = x.squeeze(2)
 
     #x = x.permute(0,2,1)

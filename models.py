@@ -577,7 +577,7 @@ class OctMLT(nn.Module):
     self.conv15_s = Conv2d(512, 512, (2, 3), padding=(0, 1), bias=False) 
     #self.conv18 = Conv2d(512, 8400, 1, padding=(0,0))
     self.rnn = LSTM(512, nh, 2, bidirectional=True)
-    self.linear = nn.Linear(nh*2, num_classes+1)
+    self.linear = nn.Linear(nh*2, num_classes)
     self.softmax = nn.Softmax(dim=2)
     
     self.batch128 = _InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True)
@@ -702,6 +702,7 @@ class OctMLT(nn.Module):
     seq, hidden = self.rnn(x)
     seq = self.linear(seq)
     seq = self.softmax(seq)
+    seq = seq.argmax(dim=2)
     #x = x.squeeze(2)
 
     #x = x.permute(0,2,1)
